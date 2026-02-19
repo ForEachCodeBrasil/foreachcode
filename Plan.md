@@ -1,7 +1,7 @@
-# Plano de Desenvolvimento - ForEachDev
+# Plano de Desenvolvimento - ForEachCode
 
 ## Resumo do Projeto
-Site institucional moderno para ForEachDev (empresa de desenvolvimento de software) usando Laravel 12 + Vue 3 SPA com design cyberpunk/hacker (tema escuro baseado no Lycento) e arquitetura REST API.
+Site institucional moderno para ForEachCode (empresa de desenvolvimento de software) usando Laravel 12 + Vue 3 SPA com design cyberpunk/hacker (tema escuro baseado no Lycento) e arquitetura REST API.
 
 ## Status Atual
 - [x] Setup inicial Laravel 12 + Vue 3
@@ -23,7 +23,7 @@ Site institucional moderno para ForEachDev (empresa de desenvolvimento de softwa
 ## Deploy
 
 ### Local (Laravel Herd)
-- URL: https://foreachdev.test
+- URL: https://foreachcode.test
 - Certificado SSL automático
 - Desenvolvimento com `npm run dev` + `php artisan serve`
 
@@ -35,7 +35,7 @@ Site institucional moderno para ForEachDev (empresa de desenvolvimento de softwa
 ## Comandos Úteis
 ```bash
 # Desenvolvimento
-cd /Volumes/scandisk2TB/dev/Pessoal/foreachdev
+cd /Volumes/scandisk2TB/dev/Pessoal/foreachcode
 npm run dev
 php artisan serve
 
@@ -53,7 +53,7 @@ npm run build
 
 ## Estrutura do Projeto
 ```
-foreachdev/
+foreachcode/
 ├── app/Http/Controllers/ContactController.php
 ├── app/Http/Requests/ContactRequest.php
 ├── app/Mail/ContactMail.php

@@ -1,13 +1,13 @@
-# Agent Guidelines for ForEachDev
+# Agent Guidelines for ForEachCode
 
 ## Project Overview
 
-ForEachDev - Site institucional em Laravel 12 + Vue 3 SPA com TypeScript, Tailwind CSS v4, e tema cyberpunk/hacker (baseado no design do Lycento).
+ForEachCode - Site institucional em Laravel 12 + Vue 3 SPA com TypeScript, Tailwind CSS v4, e tema cyberpunk/hacker (baseado no design do Lycento).
 
 ## Project Structure
 
 ```
-foreachdev/
+foreachcode/
 ├── app/
 │   ├── Http/Controllers/      # API controllers
 │   │   └── ContactController.php
@@ -116,7 +116,7 @@ php artisan test
 ## Deployment
 
 ### Local Development (Laravel Herd)
-- Site automaticamente disponível em: `https://foreachdev.test`
+- Site automaticamente disponível em: `https://foreachcode.test`
 - Herd gerencia PHP, nginx e SSL automaticamente
 
 ### Produção (Coolify)

@@ -1,4 +1,4 @@
-# Documentação de Deploy - ForEachDev
+# Documentação de Deploy - ForEachCode
 
 ## Ambiente de Desenvolvimento Local (Laravel Herd)
 
@@ -12,13 +12,13 @@
 
 1. **Herd detecta automaticamente** o site quando você navega até o diretório:
    ```bash
-   cd /Volumes/scandisk2TB/dev/Pessoal/foreachdev
+   cd /Volumes/scandisk2TB/dev/Pessoal/foreachcode
    herd open
    ```
 
 2. **Acesse o site** em:
-   - http://foreachdev.test (HTTP)
-   - https://foreachdev.test (HTTPS com certificado automático)
+   - http://foreachcode.test (HTTP)
+   - https://foreachcode.test (HTTPS com certificado automático)
 
 3. **Banco de dados** (SQLite para desenvolvimento):
    ```bash
@@ -81,10 +81,10 @@ cmd = "php artisan serve --host=0.0.0.0 --port=$PORT"
 Configure no painel do Coolify:
 
 ```bash
-APP_NAME=ForEachDev
+APP_NAME=ForEachCode
 APP_ENV=production
 APP_KEY=<gerar-novo>
-APP_URL=https://foreachdev.com
+APP_URL=https://foreachcode.net
 
 DB_CONNECTION=sqlite
 DB_DATABASE=/app/database/database.sqlite
@@ -99,8 +99,8 @@ MAIL_PORT=587
 MAIL_USERNAME=seu-email@gmail.com
 MAIL_PASSWORD=sua-app-password
 MAIL_ENCRYPTION=tls
-MAIL_FROM_ADDRESS=foreachdev@foreachdev.com
-MAIL_FROM_NAME="ForEachDev"
+MAIL_FROM_ADDRESS=contato@foreachcode.net
+MAIL_FROM_NAME="ForEachCode"
 ```
 
 ### Preparar para Deploy

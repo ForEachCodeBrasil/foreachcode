@@ -33,7 +33,7 @@ class ContactTest extends TestCase
             ]);
 
         Mail::assertQueued(ContactMail::class, function ($mail) {
-            return $mail->hasTo(config('mail.contact.email', 'foreachdev@foreachdev.com'));
+            return $mail->hasTo(config('mail.contact.email', 'contato@foreachcode.net'));
         });
 
         Log::shouldHaveReceived('info')

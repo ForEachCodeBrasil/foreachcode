@@ -20,7 +20,7 @@ class ContactController extends Controller
             Log::info('Novo contato recebido', $data);
 
             // Enviar email
-            Mail::to(config('mail.contact.email', 'foreachdev@foreachdev.com'))
+            Mail::to(config('mail.contact.email', 'contato@foreachcode.net'))
                 ->send(new ContactMail($data));
 
             return response()->json([

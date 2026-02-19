@@ -1,9 +1,9 @@
 import mateusHeadshot from '../assets/headshot/mateus.png'
 
 export const company = {
-  shortName: 'ForEachDev',
-  legalName: 'ForEachDev Software Studio',
-  email: 'foreachdev@foreachdev.com',
+  shortName: 'ForEachCode',
+  legalName: 'ForEachCode Software Studio',
+  email: 'contato@foreachcode.net',
   location: 'Sao Paulo, Brazil',
   responseWindow: 'Within one business day',
   heroTagline: 'Engineering-first digital products for teams that need real delivery.',
