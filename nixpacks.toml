@@ -62,7 +62,6 @@ BROADCAST_CONNECTION=log
 FILESYSTEM_DISK=local
 QUEUE_CONNECTION=sync
 CACHE_STORE=file
-ASSET_URL=https://foreachcode.net
 VITE_APP_NAME=ForEachCode
 MAIL_MAILER=log
 MAIL_CONTACT_EMAIL=contato@foreachcode.net
