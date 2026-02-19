@@ -91,9 +91,10 @@ if [ ! -f /app/database/database.sqlite ]; then
 fi
 
 # Gerar APP_KEY se não existir
-if ! grep -q "^APP_KEY=base64:" /app/.env 2>/dev/null || [ -z "$(grep "^APP_KEY=" /app/.env | cut -d= -f2)" ]; then
+APP_KEY_VALUE=$(grep "^APP_KEY=" /app/.env 2>/dev/null | cut -d= -f2 | tr -d '[:space:]')
+if [ -z "$APP_KEY_VALUE" ] || [ "$APP_KEY_VALUE" = "" ]; then
     echo "Generating APP_KEY..."
-    php /app/artisan key:generate --force
+    cd /app && php artisan key:generate --force --show >> /app/.env
 fi
 
 # Linkar storage
