@@ -8,8 +8,7 @@ nixPkgs = [
     "python311Packages.supervisor",
 ]
 
-[phases.setup.nixOverlays]
-overlays = [
+nixOverlays = [
     "https://github.com/railwayapp/nix-npm-overlay/archive/main.tar.gz"
 ]
 
