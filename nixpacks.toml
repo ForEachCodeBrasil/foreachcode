@@ -33,14 +33,15 @@ mkdir -p /app/storage/logs /app/storage/framework/cache/data /app/storage/framew
 chmod -R 777 /app/storage /app/bootstrap/cache /app/database
 chown -R www-data:www-data /app/storage /app/bootstrap/cache 2>/dev/null || true
 
-# Criar .env de produção se não existir
-if [ ! -f /app/.env ]; then
-    echo "Creating .env file..."
-    cat > /app/.env << 'ENVFILE'
+# Criar .env de produção
+# As variáveis críticas (APP_KEY) devem ser definidas no Coolify como env vars
+echo "Creating .env file..."
+cat > /app/.env << ENVFILE
 APP_NAME=ForEachCode
 APP_ENV=production
 APP_DEBUG=false
 APP_URL=https://foreachcode.net
+APP_KEY=${APP_KEY}
 APP_LOCALE=pt_BR
 APP_FALLBACK_LOCALE=en
 APP_FAKER_LOCALE=pt_BR
@@ -61,40 +62,25 @@ BROADCAST_CONNECTION=log
 FILESYSTEM_DISK=local
 QUEUE_CONNECTION=sync
 CACHE_STORE=file
+ASSET_URL=https://foreachcode.net
 VITE_APP_NAME=ForEachCode
 MAIL_MAILER=log
 MAIL_CONTACT_EMAIL=contato@foreachcode.net
 ENVFILE
+
+# Validar que APP_KEY foi definido
+if [ -z "${APP_KEY}" ]; then
+    echo "ERROR: APP_KEY environment variable is not set! Define it in Coolify dashboard."
+    exit 1
 fi
 
-# Atualizar variáveis de ambiente no .env existente
-sed -i 's/APP_ENV=.*/APP_ENV=production/' /app/.env 2>/dev/null || true
-sed -i 's/APP_DEBUG=.*/APP_DEBUG=false/' /app/.env 2>/dev/null || true
-sed -i 's|APP_URL=.*|APP_URL=https://foreachcode.net|' /app/.env 2>/dev/null || true
-sed -i 's|DB_DATABASE=.*|DB_DATABASE=/app/database/database.sqlite|' /app/.env 2>/dev/null || true
-sed -i 's/SESSION_DRIVER=.*/SESSION_DRIVER=file/' /app/.env 2>/dev/null || true
-sed -i 's/CACHE_STORE=.*/CACHE_STORE=file/' /app/.env 2>/dev/null || true
-sed -i 's/QUEUE_CONNECTION=.*/QUEUE_CONNECTION=sync/' /app/.env 2>/dev/null || true
-
-# Garantir ASSET_URL com HTTPS
-if ! grep -q "^ASSET_URL=" /app/.env 2>/dev/null; then
-    echo "ASSET_URL=https://foreachcode.net" >> /app/.env
-else
-    sed -i 's|ASSET_URL=.*|ASSET_URL=https://foreachcode.net|' /app/.env 2>/dev/null || true
-fi
+echo "APP_KEY is set, proceeding..."
 
 # Criar SQLite se não existir (runtime)
 if [ ! -f /app/database/database.sqlite ]; then
     echo "Creating SQLite database..."
     touch /app/database/database.sqlite
     chmod 777 /app/database/database.sqlite
-fi
-
-# Gerar APP_KEY se não existir
-APP_KEY_VALUE=$(grep "^APP_KEY=" /app/.env 2>/dev/null | cut -d= -f2 | tr -d '[:space:]')
-if [ -z "$APP_KEY_VALUE" ] || [ "$APP_KEY_VALUE" = "" ]; then
-    echo "Generating APP_KEY..."
-    cd /app && php artisan key:generate --force --show >> /app/.env
 fi
 
 # Linkar storage
