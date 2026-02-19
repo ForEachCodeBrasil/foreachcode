@@ -31,6 +31,13 @@ cmd = "/assets/start.sh"
 [staticAssets]
 "start.sh" = '''#!/bin/bash
 
+# Criar diretório database e arquivo SQLite
+mkdir -p /app/database
+if [ ! -f /app/database/database.sqlite ]; then
+    touch /app/database/database.sqlite
+fi
+chmod 777 /app/database/database.sqlite
+
 # Corrigir permissões do storage e bootstrap/cache
 mkdir -p /app/storage/logs /app/storage/framework/cache/data /app/storage/framework/sessions /app/storage/framework/views /app/storage/app/public /app/bootstrap/cache
 chmod -R 777 /app/storage /app/bootstrap/cache /app/database
@@ -45,6 +52,9 @@ fi
 if ! grep -q "APP_KEY=" /app/.env || grep -q "APP_KEY=$" /app/.env || [ -z "$(grep "APP_KEY=" /app/.env | cut -d= -f2)" ]; then
     php /app/artisan key:generate --force
 fi
+
+# Migrar banco de dados
+php /app/artisan migrate --force 2>/dev/null || true
 
 node /assets/scripts/prestart.mjs /assets/nginx.template.conf /etc/nginx.conf
 supervisord -c /etc/supervisord.conf -n
