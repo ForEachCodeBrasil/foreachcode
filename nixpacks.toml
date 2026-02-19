@@ -1,9 +1,27 @@
 [phases.setup]
-nixPkgs = ["...", "python311Packages.supervisor", "nodePackages.npm"]
+nixPkgs = [
+    "(php.withExtensions (pe: pe.enabled ++ []))",
+    "nginx",
+    "libmysqlclient",
+    "phpPackages.composer",
+    "nodejs_22",
+    "python311Packages.supervisor",
+]
+
+[phases.setup.nixOverlays]
+overlays = [
+    "https://github.com/railwayapp/nix-npm-overlay/archive/main.tar.gz"
+]
+
+[phases.install]
+cmds = [
+    "mkdir -p /var/log/nginx && mkdir -p /var/cache/nginx",
+    "composer install --ignore-platform-reqs",
+    "npm ci"
+]
 
 [phases.build]
 cmds = [
-    "npm ci",
     "npm run build",
     "composer install --no-dev --optimize-autoloader",
     "php artisan optimize",
@@ -11,14 +29,13 @@ cmds = [
     "php artisan route:cache",
     "php artisan view:cache",
     "mkdir -p /etc/supervisor/conf.d/",
-    "cp /assets/worker-*.conf /etc/supervisor/conf.d/",
-    "cp /assets/supervisord.conf /etc/supervisord.conf",
-    "chmod +x /assets/start.sh",
-    "..."
+    "cp /assets/worker-*.conf /etc/supervisor/conf.d/ || true",
+    "cp /assets/supervisord.conf /etc/supervisord.conf || true",
+    "chmod +x /assets/start.sh || true"
 ]
 
 [start]
-cmd = '/assets/start.sh'
+cmd = "/assets/start.sh"
 
 [staticAssets]
 "start.sh" = '''
