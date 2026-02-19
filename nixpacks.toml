@@ -13,16 +13,6 @@ nixPkgs = [
 cmds = [
     "npm run build",
     "composer install --no-dev --optimize-autoloader",
-    "cp -n .env.example .env 2>/dev/null || true",
-    "php artisan key:generate --force || true",
-    "mkdir -p /app/database",
-    "touch /app/database/database.sqlite",
-    "chmod 777 /app/database/database.sqlite",
-    "php artisan migrate --force || true",
-    "php artisan optimize",
-    "php artisan config:cache",
-    "php artisan route:cache",
-    "php artisan view:cache",
     "mkdir -p /etc/supervisor/conf.d/",
     "cp /assets/worker-*.conf /etc/supervisor/conf.d/",
     "cp /assets/supervisord.conf /etc/supervisord.conf",
@@ -61,6 +51,19 @@ if ! grep -q "APP_KEY=" /app/.env || [ -z "$(grep "APP_KEY=" /app/.env | cut -d=
     echo "Generating APP_KEY..."
     php /app/artisan key:generate --force
 fi
+
+# Limpar caches antigos (gerados no build sem APP_KEY)
+echo "Clearing caches..."
+php /app/artisan config:clear
+php /app/artisan cache:clear
+php /app/artisan view:clear
+php /app/artisan route:clear
+
+# Recriar caches com APP_KEY correto
+echo "Caching configurations..."
+php /app/artisan config:cache
+php /app/artisan route:cache
+php /app/artisan view:cache
 
 echo "Running migrations..."
 php /app/artisan migrate --force || echo "Migration completed or skipped"
