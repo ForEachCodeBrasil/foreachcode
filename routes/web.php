@@ -8,7 +8,12 @@ use Illuminate\Support\Facades\Route;
 |--------------------------------------------------------------------------
 */
 
+// Healthcheck endpoint
+Route::get('/health', function () {
+    return response()->json(['status' => 'ok']);
+});
+
 // SPA catch-all route
 Route::get('/{any?}', function () {
     return view('app');
-})->where('any', '^(?!api).*')->name('home');
+})->where('any', '^(?!api|health).*')->name('home');
