@@ -76,6 +76,13 @@ sed -i 's/SESSION_DRIVER=.*/SESSION_DRIVER=file/' /app/.env 2>/dev/null || true
 sed -i 's/CACHE_STORE=.*/CACHE_STORE=file/' /app/.env 2>/dev/null || true
 sed -i 's/QUEUE_CONNECTION=.*/QUEUE_CONNECTION=sync/' /app/.env 2>/dev/null || true
 
+# Garantir ASSET_URL com HTTPS
+if ! grep -q "^ASSET_URL=" /app/.env 2>/dev/null; then
+    echo "ASSET_URL=https://foreachcode.net" >> /app/.env
+else
+    sed -i 's|ASSET_URL=.*|ASSET_URL=https://foreachcode.net|' /app/.env 2>/dev/null || true
+fi
+
 # Criar SQLite se não existir (runtime)
 if [ ! -f /app/database/database.sqlite ]; then
     echo "Creating SQLite database..."
