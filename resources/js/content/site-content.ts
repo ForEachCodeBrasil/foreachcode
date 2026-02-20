@@ -1,5 +1,5 @@
 import mateusHeadshot from '../assets/headshot/mateus.png'
-import brettHeadshot from '../assets/headshot/brett-humphreys.png'
+import brettHeadshot from '../assets/headshot/brett-humphreys.webp'
 
 export type Locale = 'pt' | 'en'
 
