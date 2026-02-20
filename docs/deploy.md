@@ -94,13 +94,14 @@ SESSION_DRIVER=file
 QUEUE_CONNECTION=sync
 
 MAIL_MAILER=smtp
-MAIL_HOST=smtp.gmail.com
-MAIL_PORT=587
-MAIL_USERNAME=seu-email@gmail.com
-MAIL_PASSWORD=sua-app-password
-MAIL_ENCRYPTION=tls
-MAIL_FROM_ADDRESS=contato@foreachcode.net
+MAIL_SCHEME=smtps
+MAIL_HOST=smtp.hostinger.com
+MAIL_PORT=465
+MAIL_USERNAME=foreachcode@foreachcode.net
+MAIL_PASSWORD=<senha-da-caixa-hostinger>
+MAIL_FROM_ADDRESS=foreachcode@foreachcode.net
 MAIL_FROM_NAME="ForEachCode"
+MAIL_CONTACT_EMAIL=foreachcode@foreachcode.net
 ```
 
 ### Preparar para Deploy

@@ -5,12 +5,15 @@ declare(strict_types=1);
 namespace Tests\Feature;
 
 use App\Mail\ContactMail;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Tests\TestCase;
 
 class ContactTest extends TestCase
 {
+    use RefreshDatabase;
+
     public function test_contact_form_submission_succeeds_with_valid_data(): void
     {
         Mail::fake();
@@ -20,6 +23,7 @@ class ContactTest extends TestCase
             'name' => 'John Doe',
             'email' => 'john@example.com',
             'service' => 'Web Development',
+            'locale' => 'en',
             'message' => 'This is a test message with more than 10 characters.',
         ]);
 
@@ -32,8 +36,15 @@ class ContactTest extends TestCase
                 ],
             ]);
 
+        $this->assertDatabaseHas('contact_submissions', [
+            'name' => 'John Doe',
+            'email' => 'john@example.com',
+            'service' => 'Web Development',
+            'locale' => 'en',
+        ]);
+
         Mail::assertQueued(ContactMail::class, function ($mail) {
-            return $mail->hasTo(config('mail.contact.email', 'contato@foreachcode.net'));
+            return $mail->hasTo(config('mail.contact.email', 'foreachcode@foreachcode.net'));
         });
 
         Log::shouldHaveReceived('info')
@@ -75,6 +86,49 @@ class ContactTest extends TestCase
 
         $response->assertStatus(422)
             ->assertJsonValidationErrors(['message']);
+    }
+
+    public function test_contact_form_keeps_submission_when_email_fails(): void
+    {
+        Mail::shouldReceive('to->send')
+            ->once()
+            ->andThrow(new \RuntimeException('SMTP error'));
+
+        $response = $this->postJson('/api/contact', [
+            'name' => 'Jane Doe',
+            'email' => 'jane@example.com',
+            'service' => 'Technical Discovery',
+            'message' => 'Need architecture review for a product migration project.',
+        ]);
+
+        $response->assertStatus(201)
+            ->assertJson([
+                'message' => 'Mensagem enviada com sucesso!',
+                'data' => [
+                    'name' => 'Jane Doe',
+                    'email' => 'jane@example.com',
+                ],
+            ]);
+
+        $this->assertDatabaseHas('contact_submissions', [
+            'name' => 'Jane Doe',
+            'email' => 'jane@example.com',
+            'service' => 'Technical Discovery',
+        ]);
+    }
+
+    public function test_contact_form_fails_with_invalid_locale(): void
+    {
+        $response = $this->postJson('/api/contact', [
+            'name' => 'John Doe',
+            'email' => 'john@example.com',
+            'service' => 'Web Development',
+            'locale' => 'es',
+            'message' => 'This is a test message with more than 10 characters.',
+        ]);
+
+        $response->assertStatus(422)
+            ->assertJsonValidationErrors(['locale']);
     }
 
     public function test_health_endpoint_returns_ok(): void

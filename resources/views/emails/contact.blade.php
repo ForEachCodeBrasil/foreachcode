@@ -1,5 +1,5 @@
 <x-mail::message>
-# Novo Contato - ForEachDev
+# Novo Contato - ForEachCode
 
 **Nome:** {{ $data['name'] }}
 
@@ -13,6 +13,10 @@
 
 @if(isset($data['budget']))
 **Orçamento:** {{ $data['budget'] }}
+@endif
+
+@if(isset($data['locale']))
+**Idioma:** {{ strtoupper($data['locale']) }}
 @endif
 
 **Mensagem:**

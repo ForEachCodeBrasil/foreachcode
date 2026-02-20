@@ -40,7 +40,7 @@ cat > /app/.env << ENVFILE
 APP_NAME=ForEachCode
 APP_ENV=production
 APP_DEBUG=false
-APP_URL=https://foreachcode.net
+APP_URL=${APP_URL:-https://foreachcode.net}
 APP_KEY=${APP_KEY}
 APP_LOCALE=pt_BR
 APP_FALLBACK_LOCALE=en
@@ -63,8 +63,15 @@ FILESYSTEM_DISK=local
 QUEUE_CONNECTION=sync
 CACHE_STORE=file
 VITE_APP_NAME=ForEachCode
-MAIL_MAILER=log
-MAIL_CONTACT_EMAIL=contato@foreachcode.net
+MAIL_MAILER=${MAIL_MAILER:-smtp}
+MAIL_SCHEME=${MAIL_SCHEME:-smtps}
+MAIL_HOST=${MAIL_HOST:-smtp.hostinger.com}
+MAIL_PORT=${MAIL_PORT:-465}
+MAIL_USERNAME=${MAIL_USERNAME:-foreachcode@foreachcode.net}
+MAIL_PASSWORD=${MAIL_PASSWORD}
+MAIL_FROM_ADDRESS=${MAIL_FROM_ADDRESS:-foreachcode@foreachcode.net}
+MAIL_FROM_NAME=${MAIL_FROM_NAME:-ForEachCode}
+MAIL_CONTACT_EMAIL=${MAIL_CONTACT_EMAIL:-foreachcode@foreachcode.net}
 ENVFILE
 
 # Validar que APP_KEY foi definido

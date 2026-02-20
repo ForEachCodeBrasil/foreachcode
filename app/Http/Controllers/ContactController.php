@@ -6,6 +6,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\ContactRequest;
 use App\Mail\ContactMail;
+use App\Models\ContactSubmission;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
@@ -15,30 +16,34 @@ class ContactController extends Controller
     public function store(ContactRequest $request): JsonResponse
     {
         $data = $request->validated();
+        $submission = ContactSubmission::create([
+            ...$data,
+            'ip_address' => $request->ip(),
+            'user_agent' => $request->userAgent(),
+        ]);
 
         try {
-            Log::info('Novo contato recebido', $data);
-
-            // Enviar email
-            Mail::to(config('mail.contact.email', 'contato@foreachcode.net'))
+            Mail::to(config('mail.contact.email', 'foreachcode@foreachcode.net'))
                 ->send(new ContactMail($data));
-
-            return response()->json([
-                'message' => 'Mensagem enviada com sucesso!',
-                'data' => [
-                    'name' => $data['name'],
-                    'email' => $data['email'],
-                ],
-            ], 201);
         } catch (\Throwable $e) {
-            Log::error('Erro ao processar contato', [
+            Log::warning('Contato salvo, mas houve falha ao enviar email', [
                 'error' => $e->getMessage(),
-                'data' => $data,
+                'submission_id' => $submission->id,
             ]);
-
-            return response()->json([
-                'message' => 'Erro ao enviar mensagem. Tente novamente.',
-            ], 500);
         }
+
+        Log::info('Novo contato recebido', [
+            ...$data,
+            'submission_id' => $submission->id,
+        ]);
+
+        return response()->json([
+            'message' => 'Mensagem enviada com sucesso!',
+            'data' => [
+                'id' => $submission->id,
+                'name' => $data['name'],
+                'email' => $data['email'],
+            ],
+        ], 201);
     }
 }

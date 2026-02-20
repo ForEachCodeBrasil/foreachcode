@@ -1,59 +1,177 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# ForEachCode
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Site institucional da ForEachCode com Laravel 12 + Vue 3 SPA + TypeScript + Tailwind CSS v4.
 
-## About Laravel
+## Stack
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+- Backend: Laravel 12 (PHP 8.2+)
+- Frontend: Vue 3 + Vue Router + TypeScript
+- Build: Vite
+- Estilo: Tailwind CSS v4 (tema cyberpunk)
+- Banco: SQLite (local e produção atual)
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## Features principais
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+- SPA com rotas localizadas: `/{locale}`
+- Idiomas: PT e EN (`/pt`, `/en`)
+- Páginas de conversão: Home, Services, Work, About, Contact
+- Formulário de diagnóstico integrado em `POST /api/contact`
+- Persistência de leads na tabela `contact_submissions`
+- Envio de email do lead para `MAIL_CONTACT_EMAIL`
+- SEO on-page com metadados por rota + JSON-LD
+- Eventos GA4 no funil (se `VITE_GA_MEASUREMENT_ID` estiver configurado)
 
-## Learning Laravel
+## Estrutura do projeto
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+```text
+app/
+  Http/Controllers/ContactController.php
+  Http/Requests/ContactRequest.php
+  Mail/ContactMail.php
+  Models/ContactSubmission.php
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+resources/
+  js/
+    views/
+    components/
+    content/site-content.ts
+    router/index.ts
+  views/app.blade.php
 
-## Laravel Sponsors
+database/
+  migrations/
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+tests/
+  Feature/ContactTest.php
+```
 
-### Premium Partners
+## Setup local
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+1. Instalar dependências:
 
-## Contributing
+```bash
+composer install
+npm install
+```
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+2. Configurar ambiente:
 
-## Code of Conduct
+```bash
+cp .env.example .env
+php artisan key:generate
+```
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+3. Criar banco SQLite e migrar:
 
-## Security Vulnerabilities
+```bash
+touch database/database.sqlite
+php artisan migrate
+```
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+4. Rodar aplicação:
 
-## License
+```bash
+npm run dev
+php artisan serve
+```
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+## Build e testes
+
+```bash
+npm run build
+php artisan test
+./vendor/bin/pint --test
+```
+
+## Variáveis de ambiente importantes
+
+### App / Banco
+
+```env
+APP_NAME=ForEachCode
+APP_ENV=production
+APP_URL=https://foreachcode.net
+
+DB_CONNECTION=sqlite
+DB_DATABASE=/app/database/database.sqlite
+```
+
+### Email (Hostinger SMTP)
+
+```env
+MAIL_MAILER=smtp
+MAIL_SCHEME=smtps
+MAIL_HOST=smtp.hostinger.com
+MAIL_PORT=465
+MAIL_USERNAME=foreachcode@foreachcode.net
+MAIL_PASSWORD=<senha-da-caixa>
+MAIL_FROM_ADDRESS=foreachcode@foreachcode.net
+MAIL_FROM_NAME=ForEachCode
+MAIL_CONTACT_EMAIL=foreachcode@foreachcode.net
+```
+
+Observação:
+- O `from` é fixo no domínio para entregabilidade.
+- O `reply-to` do email enviado usa o email preenchido no formulário.
+
+### Analytics (opcional)
+
+```env
+VITE_GA_MEASUREMENT_ID=G-XXXXXXXXXX
+```
+
+## Endpoints
+
+- `GET /api/health`
+- `POST /api/contact`
+
+Payload esperado em `POST /api/contact`:
+
+```json
+{
+  "name": "John Doe",
+  "email": "john@company.com",
+  "company": "Company Ltd",
+  "service": "Discovery + Architecture",
+  "budget": "R$ 25k - R$ 60k",
+  "message": "Contexto e objetivo do projeto",
+  "locale": "pt"
+}
+```
+
+## Deploy (Coolify + Nixpacks)
+
+- Arquivo de deploy: `nixpacks.toml`
+- Start script cria `.env` de runtime e aplica migrations automaticamente.
+
+Após alterar variáveis no Coolify, execute no container:
+
+```bash
+php artisan config:clear
+php artisan config:cache
+```
+
+## Troubleshooting
+
+### Erro no formulário: `no such table: contact_submissions`
+
+Rode:
+
+```bash
+php artisan migrate --force
+php artisan optimize:clear
+```
+
+### Email não chega
+
+1. Verifique `MAIL_PASSWORD` no ambiente do servidor.
+2. Confirme host/porta/credenciais SMTP.
+3. Veja logs:
+
+```bash
+tail -f storage/logs/laravel.log
+```
+
+## Licença
+
+Projeto proprietário da ForEachCode.

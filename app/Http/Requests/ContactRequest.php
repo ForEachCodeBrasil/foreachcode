@@ -22,6 +22,7 @@ class ContactRequest extends FormRequest
             'service' => ['required', 'string', 'max:255'],
             'budget' => ['nullable', 'string', 'max:255'],
             'message' => ['required', 'string', 'min:10', 'max:5000'],
+            'locale' => ['nullable', 'in:pt,en'],
         ];
     }
 
@@ -34,6 +35,7 @@ class ContactRequest extends FormRequest
             'service.required' => 'Por favor, selecione um tipo de serviço.',
             'message.required' => 'A descrição do projeto é obrigatória.',
             'message.min' => 'Por favor, descreva seu projeto com pelo menos 10 caracteres.',
+            'locale.in' => 'O idioma informado é inválido.',
         ];
     }
 }

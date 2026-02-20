@@ -23,7 +23,7 @@ class ContactMail extends Mailable implements ShouldQueue
     {
         return new Envelope(
             subject: 'Novo contato: '.$this->contactData['service'],
-            from: $this->contactData['email'],
+            replyTo: [$this->contactData['email']],
         );
     }
 
