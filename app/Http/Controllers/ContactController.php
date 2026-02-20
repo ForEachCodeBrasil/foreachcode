@@ -16,6 +16,8 @@ class ContactController extends Controller
     public function store(ContactRequest $request): JsonResponse
     {
         $data = $request->validated();
+        $locale = $data['locale'] ?? null;
+        $recipient = $this->resolveContactRecipient($locale);
         $submission = ContactSubmission::create([
             ...$data,
             'ip_address' => $request->ip(),
@@ -23,18 +25,20 @@ class ContactController extends Controller
         ]);
 
         try {
-            Mail::to(config('mail.contact.email', 'foreachcode@foreachcode.net'))
+            Mail::to($recipient)
                 ->send(new ContactMail($data));
         } catch (\Throwable $e) {
             Log::warning('Contato salvo, mas houve falha ao enviar email', [
                 'error' => $e->getMessage(),
                 'submission_id' => $submission->id,
+                'recipient' => $recipient,
             ]);
         }
 
         Log::info('Novo contato recebido', [
             ...$data,
             'submission_id' => $submission->id,
+            'recipient' => $recipient,
         ]);
 
         return response()->json([
@@ -45,5 +49,16 @@ class ContactController extends Controller
                 'email' => $data['email'],
             ],
         ], 201);
+    }
+
+    private function resolveContactRecipient(?string $locale): string
+    {
+        $defaultRecipient = config('mail.contact.default', 'foreachcode@foreachcode.net');
+
+        if (in_array($locale, ['pt', 'en'], true)) {
+            return (string) config("mail.contact.{$locale}", $defaultRecipient);
+        }
+
+        return (string) $defaultRecipient;
     }
 }

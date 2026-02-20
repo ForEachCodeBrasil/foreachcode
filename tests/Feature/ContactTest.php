@@ -43,8 +43,8 @@ class ContactTest extends TestCase
             'locale' => 'en',
         ]);
 
-        Mail::assertQueued(ContactMail::class, function ($mail) {
-            return $mail->hasTo(config('mail.contact.email', 'foreachcode@foreachcode.net'));
+        Mail::assertSent(ContactMail::class, function ($mail) {
+            return $mail->hasTo(config('mail.contact.en', 'foreachcode@foreachcode.net'));
         });
 
         Log::shouldHaveReceived('info')
@@ -141,7 +141,26 @@ class ContactTest extends TestCase
                 'timestamp',
             ])
             ->assertJson([
-                'status' => 'ok',
+            'status' => 'ok',
             ]);
+    }
+
+    public function test_contact_form_submission_sends_to_portuguese_alias_when_locale_is_pt(): void
+    {
+        Mail::fake();
+
+        $response = $this->postJson('/api/contact', [
+            'name' => 'Maria Doe',
+            'email' => 'maria@example.com',
+            'service' => 'Discovery + Arquitetura',
+            'locale' => 'pt',
+            'message' => 'Preciso de apoio para revisar arquitetura e plano de entrega.',
+        ]);
+
+        $response->assertStatus(201);
+
+        Mail::assertSent(ContactMail::class, function ($mail) {
+            return $mail->hasTo(config('mail.contact.pt', 'foreachcode@foreachcode.net'));
+        });
     }
 }

@@ -176,7 +176,7 @@ const content: Record<Locale, LocalizedContent> = {
     company: {
       shortName: 'ForEachCode',
       legalName: 'ForEachCode Software Studio',
-      email: 'foreachcode@foreachcode.net',
+      email: 'contato@foreachcode.net',
       location: 'Sao Paulo, Brazil',
       responseWindow: 'Em ate 1 dia util',
     },
@@ -317,7 +317,7 @@ const content: Record<Locale, LocalizedContent> = {
       members: [
         {
           name: 'Brett Humphreys',
-          role: 'Founder',
+          role: 'Senior Full Cycle Developer',
           credentials: 'Veteran-owned · TS/SCI cleared',
           bio: 'Major reformado do Exercito e engenheiro de software senior. Lidera arquitetura frontend e produto em campo; constroi com Vue, Flutter e Go. Membro do conselho da Homeland Security Foundation of America. Mais de 20 anos de lideranca e entrega, do comando a aplicacoes em producao.',
           linkedin: 'https://www.linkedin.com/in/humphreysbrett/',
@@ -326,7 +326,7 @@ const content: Record<Locale, LocalizedContent> = {
         },
         {
           name: 'Mateus Galasso',
-          role: 'Senior Full Cycle Developer',
+          role: 'Fundador',
           bio: '20+ anos em tecnologia com foco em PHP, Laravel, Vue, DevOps e cloud. Atua na definicao tecnica e na execucao direta de entregas para produtos web e sistemas internos.',
           linkedin: 'https://www.linkedin.com/in/mateus-galasso',
           github: 'https://github.com/mateusgalasso',
@@ -476,7 +476,7 @@ const content: Record<Locale, LocalizedContent> = {
     company: {
       shortName: 'ForEachCode',
       legalName: 'ForEachCode Software Studio',
-      email: 'foreachcode@foreachcode.net',
+      email: 'contact@foreachcode.net',
       location: 'Sao Paulo, Brazil',
       responseWindow: 'Within one business day',
     },
@@ -617,7 +617,7 @@ const content: Record<Locale, LocalizedContent> = {
       members: [
         {
           name: 'Brett Humphreys',
-          role: 'Founder',
+          role: 'Senior Full Cycle Developer',
           credentials: 'Veteran-owned · TS/SCI cleared',
           bio: 'Retired Army Major and senior software engineer. Leads frontend architecture and product in the wild; builds with Vue, Flutter, and Go. Board member at Homeland Security Foundation of America. 20+ years of leadership and delivery from command to production apps.',
           linkedin: 'https://www.linkedin.com/in/humphreysbrett/',
@@ -626,7 +626,7 @@ const content: Record<Locale, LocalizedContent> = {
         },
         {
           name: 'Mateus Galasso',
-          role: 'Senior Full Cycle Developer',
+          role: 'Founder',
           bio: '20+ years in software with focus on PHP, Laravel, Vue, DevOps, and cloud delivery. Drives architecture and implementation for web products and internal systems.',
           linkedin: 'https://www.linkedin.com/in/mateus-galasso',
           github: 'https://github.com/mateusgalasso',

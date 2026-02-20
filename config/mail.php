@@ -116,7 +116,9 @@ return [
     ],
 
     'contact' => [
-        'email' => env('MAIL_CONTACT_EMAIL', 'foreachcode@foreachcode.net'),
+        'default' => env('MAIL_CONTACT_EMAIL', 'foreachcode@foreachcode.net'),
+        'pt' => env('MAIL_CONTACT_EMAIL_PT', env('MAIL_CONTACT_EMAIL', 'foreachcode@foreachcode.net')),
+        'en' => env('MAIL_CONTACT_EMAIL_EN', env('MAIL_CONTACT_EMAIL', 'foreachcode@foreachcode.net')),
     ],
 
 ];
