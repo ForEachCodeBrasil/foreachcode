@@ -1,4 +1,14 @@
 # Nixpacks configuration - PHP 8.4
+[variables]
+    MAIL_MAILER = "smtp"
+    MAIL_HOST = "smtp.hostinger.com"
+    MAIL_PORT = "465"
+    MAIL_SCHEME = "smtps"
+    MAIL_USERNAME = "foreachcode@foreachcode.net"
+    MAIL_FROM_ADDRESS = "foreachcode@foreachcode.net"
+    MAIL_FROM_NAME = "ForEachCode"
+    MAIL_CONTACT_EMAIL = "foreachcode@foreachcode.net"
+
 [phases.setup]
 nixPkgs = [
     "(php84.withExtensions (pe: pe.enabled ++ []))",
@@ -63,15 +73,15 @@ FILESYSTEM_DISK=local
 QUEUE_CONNECTION=sync
 CACHE_STORE=file
 VITE_APP_NAME=ForEachCode
-MAIL_MAILER=${MAIL_MAILER:-smtp}
-MAIL_SCHEME=${MAIL_SCHEME:-smtps}
-MAIL_HOST=${MAIL_HOST:-smtp.hostinger.com}
-MAIL_PORT=${MAIL_PORT:-465}
-MAIL_USERNAME=${MAIL_USERNAME:-foreachcode@foreachcode.net}
+MAIL_MAILER=${MAIL_MAILER}
+MAIL_SCHEME=${MAIL_SCHEME}
+MAIL_HOST=${MAIL_HOST}
+MAIL_PORT=${MAIL_PORT}
+MAIL_USERNAME=${MAIL_USERNAME}
 MAIL_PASSWORD=${MAIL_PASSWORD}
-MAIL_FROM_ADDRESS=${MAIL_FROM_ADDRESS:-foreachcode@foreachcode.net}
-MAIL_FROM_NAME=${MAIL_FROM_NAME:-ForEachCode}
-MAIL_CONTACT_EMAIL=${MAIL_CONTACT_EMAIL:-foreachcode@foreachcode.net}
+MAIL_FROM_ADDRESS=${MAIL_FROM_ADDRESS}
+MAIL_FROM_NAME="${MAIL_FROM_NAME}"
+MAIL_CONTACT_EMAIL=${MAIL_CONTACT_EMAIL}
 ENVFILE
 
 # Validar que APP_KEY foi definido
