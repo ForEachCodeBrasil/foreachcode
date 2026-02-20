@@ -78,7 +78,6 @@ function trackEmailFallback(): void {
 
   async function submitForm(): Promise<void> {
   if (isSubmitting.value) {
-    console.log('[CONTACT FORM] Already submitting, skipping')
     return
   }
 
@@ -86,42 +85,27 @@ function trackEmailFallback(): void {
   fieldErrors.value = {}
   isSubmitting.value = true
 
-  console.log('[CONTACT FORM] Submitting form with data:', { ...form, locale: locale.value })
-
   trackEvent('submit_contact_form', {
     locale: locale.value,
     service: form.service || 'not_selected',
   })
 
   try {
-    const requestBody = JSON.stringify({
-      ...form,
-      locale: locale.value,
-    })
-    console.log('[CONTACT FORM] Request body:', requestBody)
-
     const response = await fetch('/api/contact', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         Accept: 'application/json',
-        'X-Requested-With': 'XMLHttpRequest',
       },
-      body: requestBody,
+      body: JSON.stringify({
+        ...form,
+        locale: locale.value,
+      }),
     })
 
-    console.log('[CONTACT FORM] Response status:', response.status)
-    console.log('[CONTACT FORM] Response headers:', Object.fromEntries(response.headers.entries()))
-
-    const payload = (await response.json().catch((e) => {
-      console.error('[CONTACT FORM] JSON parse error:', e)
-      return null
-    })) as { errors?: Record<string, string[]>; message?: string } | null
-
-    console.log('[CONTACT FORM] Response payload:', payload)
+    const payload = (await response.json().catch(() => null)) as { errors?: Record<string, string[]> } | null
 
     if (response.ok) {
-      console.log('[CONTACT FORM] Success!')
       status.value = 'success'
       resetForm()
       hasTrackedFormStart.value = false
@@ -134,7 +118,6 @@ function trackEmailFallback(): void {
     }
 
     if (response.status === 422 && payload?.errors) {
-      console.log('[CONTACT FORM] Validation errors:', payload.errors)
       fieldErrors.value = payload.errors
       status.value = 'validation-error'
       return
