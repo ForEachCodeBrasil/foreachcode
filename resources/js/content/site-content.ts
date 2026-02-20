@@ -190,6 +190,7 @@ const content: Record<Locale, LocalizedContent> = {
       { slug: 'services', label: 'Servicos' },
       { slug: 'work', label: 'Cases' },
       { slug: 'about', label: 'Sobre' },
+      { slug: 'team', label: 'Time' },
       { slug: 'contact', label: 'Contato' },
     ],
     home: {
@@ -489,6 +490,7 @@ const content: Record<Locale, LocalizedContent> = {
       { slug: 'services', label: 'Services' },
       { slug: 'work', label: 'Work' },
       { slug: 'about', label: 'About' },
+      { slug: 'team', label: 'Team' },
       { slug: 'contact', label: 'Contact' },
     ],
     home: {
