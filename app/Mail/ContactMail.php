@@ -5,12 +5,13 @@ declare(strict_types=1);
 namespace App\Mail;
 
 use Illuminate\Bus\Queueable;
+use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 
-class ContactMail extends Mailable
+class ContactMail extends Mailable implements ShouldQueue
 {
     use Queueable, SerializesModels;
 
@@ -21,8 +22,12 @@ class ContactMail extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
+            from: new \Illuminate\Mail\Mailables\Address(
+                config('mail.from.address', 'foreachcode@foreachcode.net'),
+                config('mail.from.name', 'ForEachCode')
+            ),
             subject: 'Novo contato: '.$this->contactData['service'],
-            replyTo: [$this->contactData['email']],
+            replyTo: [new \Illuminate\Mail\Mailables\Address($this->contactData['email'], $this->contactData['name'])],
         );
     }
 

@@ -1,13 +1,12 @@
 # Nixpacks configuration - PHP 8.4
 [variables]
-    MAIL_MAILER = "smtp"
-    MAIL_HOST = "smtp.hostinger.com"
-    MAIL_PORT = "465"
-    MAIL_SCHEME = "smtps"
-    MAIL_USERNAME = "foreachcode@foreachcode.net"
-    MAIL_FROM_ADDRESS = "foreachcode@foreachcode.net"
-    MAIL_FROM_NAME = "ForEachCode"
-    MAIL_CONTACT_EMAIL = "foreachcode@foreachcode.net"
+    MAIL_MAILER = "resend"
+    RESEND_API_KEY = "re_BvPptZfy_6xcSw9Pf2EUVVHsJY5CpC1yp"
+    MAIL_FROM_ADDRESS = "noreply@foreachcode.net"
+    MAIL_FROM_NAME = "ForEachCode Website"
+    MAIL_CONTACT_EMAIL = "contato@foreachcode.net"
+    MAIL_CONTACT_EMAIL_PT = "contato@foreachcode.net"
+    MAIL_CONTACT_EMAIL_EN = "contact@foreachcode.net"
 
 [phases.setup]
 nixPkgs = [
@@ -24,7 +23,7 @@ cmds = [
     "npm run build",
     "composer install --no-dev --optimize-autoloader",
     "mkdir -p /etc/supervisor/conf.d/",
-    "cp /assets/worker-*.conf /etc/supervisor/conf.d/",
+    "cp /assets/worker-nginx.conf /assets/worker-phpfpm.conf /etc/supervisor/conf.d/",
     "cp /assets/supervisord.conf /etc/supervisord.conf",
     "chmod +x /assets/start.sh"
 ]
@@ -74,14 +73,12 @@ QUEUE_CONNECTION=sync
 CACHE_STORE=file
 VITE_APP_NAME=ForEachCode
 MAIL_MAILER=${MAIL_MAILER}
-MAIL_SCHEME=${MAIL_SCHEME}
-MAIL_HOST=${MAIL_HOST}
-MAIL_PORT=${MAIL_PORT}
-MAIL_USERNAME=${MAIL_USERNAME}
-MAIL_PASSWORD=${MAIL_PASSWORD}
+RESEND_API_KEY=${RESEND_API_KEY}
 MAIL_FROM_ADDRESS=${MAIL_FROM_ADDRESS}
 MAIL_FROM_NAME="${MAIL_FROM_NAME}"
 MAIL_CONTACT_EMAIL=${MAIL_CONTACT_EMAIL}
+MAIL_CONTACT_EMAIL_PT=${MAIL_CONTACT_EMAIL_PT}
+MAIL_CONTACT_EMAIL_EN=${MAIL_CONTACT_EMAIL_EN}
 ENVFILE
 
 # Validar que APP_KEY foi definido

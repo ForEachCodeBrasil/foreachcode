@@ -15,28 +15,43 @@ class ContactController extends Controller
 {
     public function store(ContactRequest $request): JsonResponse
     {
+        Log::debug('[CONTACT] Starting request processing');
+
         $data = $request->validated();
+        Log::debug('[CONTACT] Data validated', $data);
+
         $locale = $data['locale'] ?? null;
         $recipient = $this->resolveContactRecipient($locale);
+        Log::debug('[CONTACT] Resolved recipient', ['recipient' => $recipient, 'locale' => $locale]);
+
+        Log::debug('[CONTACT] Creating database record...');
         $submission = ContactSubmission::create([
             ...$data,
             'ip_address' => $request->ip(),
             'user_agent' => $request->userAgent(),
         ]);
+        Log::debug('[CONTACT] Database record created', ['submission_id' => $submission->id]);
 
+        Log::debug('[CONTACT] Starting email send process', ['to' => $recipient]);
         try {
-            Mail::to($recipient)
-                ->send(new ContactMail($data));
+            $mail = new ContactMail($data);
+            Log::debug('[CONTACT] ContactMail instance created');
+
+            Mail::to($recipient)->send($mail);
+            Log::info('[CONTACT] Email sent successfully', [
+                'to' => $recipient,
+                'submission_id' => $submission->id,
+            ]);
         } catch (\Throwable $e) {
-            Log::warning('Contato salvo, mas houve falha ao enviar email', [
+            Log::error('[CONTACT] Email send failed', [
                 'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
                 'submission_id' => $submission->id,
                 'recipient' => $recipient,
             ]);
         }
 
-        Log::info('Novo contato recebido', [
-            ...$data,
+        Log::info('[CONTACT] Request completed', [
             'submission_id' => $submission->id,
             'recipient' => $recipient,
         ]);
