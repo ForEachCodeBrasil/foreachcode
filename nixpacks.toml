@@ -1,7 +1,6 @@
 # Nixpacks configuration - PHP 8.4
 [variables]
     MAIL_MAILER = "resend"
-    RESEND_API_KEY = "re_BvPptZfy_6xcSw9Pf2EUVVHsJY5CpC1yp"
     MAIL_FROM_ADDRESS = "noreply@foreachcode.net"
     MAIL_FROM_NAME = "ForEachCode Website"
     MAIL_CONTACT_EMAIL = "contato@foreachcode.net"
@@ -9,6 +8,8 @@
     MAIL_CONTACT_EMAIL_EN = "contact@foreachcode.net"
 
 [phases.setup]
+# PHP 8.4.27 (CVE-2026-109618/109619): nixpkgs pinned to a commit with php84 >= 8.4.27
+nixpkgsArchive = "6f06d204d8f2d8761d9da78778745974a3216381"
 nixPkgs = [
     "(php84.withExtensions (pe: pe.enabled ++ []))",
     "nginx",
