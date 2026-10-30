@@ -1,7 +1,9 @@
 <script setup lang="ts">
-import { computed, reactive, ref } from 'vue'
+import { computed, onMounted, reactive, ref } from 'vue'
+import { useRoute } from 'vue-router'
 import { trackEvent } from '../lib/analytics'
 import { useLocaleContent } from '../composables/useLocaleContent'
+import ChannelLinks from '../components/ChannelLinks.vue'
 
 type ContactStatus = 'idle' | 'success' | 'validation-error' | 'error'
 
@@ -15,22 +17,9 @@ type ContactPayload = {
 }
 
 const { locale, content } = useLocaleContent()
+const route = useRoute()
 const contactPage = computed(() => content.value.contactPage)
-const detailLabels = computed(() => {
-  if (locale.value === 'pt') {
-    return {
-      email: 'Email',
-      location: 'Localizacao',
-      responseTime: 'Tempo de resposta',
-    }
-  }
-
-  return {
-    email: 'Email',
-    location: 'Location',
-    responseTime: 'Response time',
-  }
-})
+const detailLabels = computed(() => contactPage.value.detailLabels)
 
 const isSubmitting = ref(false)
 const status = ref<ContactStatus>('idle')
@@ -44,6 +33,18 @@ const form = reactive<ContactPayload>({
   service: '',
   budget: '',
   message: '',
+})
+
+// Links internos podem mandar ?service=N&budget=N (índices das opções do formulário; budget = prazo).
+function optionFromQuery(options: string[], value: unknown): string {
+  const index = Number(value)
+
+  return Number.isInteger(index) && index >= 0 && index < options.length ? options[index] : ''
+}
+
+onMounted(() => {
+  form.service = optionFromQuery(contactPage.value.serviceOptions, route.query.service)
+  form.budget = optionFromQuery(contactPage.value.budgetOptions, route.query.budget)
 })
 
 function firstError(field: keyof ContactPayload): string {
@@ -76,7 +77,7 @@ function trackEmailFallback(): void {
   })
 }
 
-  async function submitForm(): Promise<void> {
+async function submitForm(): Promise<void> {
   if (isSubmitting.value) {
     return
   }
@@ -138,13 +139,12 @@ function trackEmailFallback(): void {
   <section class="px-4 py-14 sm:px-6 sm:py-16">
     <div class="mx-auto grid w-full max-w-6xl gap-5 lg:grid-cols-[1.15fr_0.85fr]">
       <article class="panel-card">
-        <p class="text-xs uppercase tracking-[0.18em] text-dim">{{ contactPage.tag }}</p>
-        <h1 class="mt-3 text-3xl font-semibold text-ink sm:text-4xl">{{ contactPage.title }}</h1>
+        <h1 class="text-3xl font-semibold text-ink sm:text-4xl">{{ contactPage.title }}</h1>
         <p class="mt-4 text-sm leading-7 text-muted">
           {{ contactPage.intro }}
         </p>
 
-        <h2 class="mt-8 text-lg font-semibold text-neon">{{ contactPage.formTitle }}</h2>
+        <h2 class="mt-8 text-lg font-semibold text-ink">{{ contactPage.formTitle }}</h2>
 
         <form class="mt-5 space-y-4" @submit.prevent="submitForm">
           <div>
@@ -154,7 +154,7 @@ function trackEmailFallback(): void {
               v-model="form.name"
               type="text"
               required
-              class="w-full border border-edge-subtle bg-base px-3 py-2 text-sm text-ink focus:border-neon"
+              class="w-full border border-edge-subtle bg-canvas px-3 py-2 text-sm text-ink focus:border-accent"
               :placeholder="contactPage.placeholders.name"
               @focus="markFormStart"
             >
@@ -168,7 +168,7 @@ function trackEmailFallback(): void {
               v-model="form.email"
               type="email"
               required
-              class="w-full border border-edge-subtle bg-base px-3 py-2 text-sm text-ink focus:border-neon"
+              class="w-full border border-edge-subtle bg-canvas px-3 py-2 text-sm text-ink focus:border-accent"
               :placeholder="contactPage.placeholders.email"
               @focus="markFormStart"
             >
@@ -181,7 +181,7 @@ function trackEmailFallback(): void {
               id="company"
               v-model="form.company"
               type="text"
-              class="w-full border border-edge-subtle bg-base px-3 py-2 text-sm text-ink focus:border-neon"
+              class="w-full border border-edge-subtle bg-canvas px-3 py-2 text-sm text-ink focus:border-accent"
               :placeholder="contactPage.placeholders.company"
               @focus="markFormStart"
             >
@@ -195,7 +195,7 @@ function trackEmailFallback(): void {
                 id="service"
                 v-model="form.service"
                 required
-                class="w-full border border-edge-subtle bg-base px-3 py-2 text-sm text-ink focus:border-neon"
+                class="w-full border border-edge-subtle bg-canvas px-3 py-2 text-sm text-ink focus:border-accent"
                 @focus="markFormStart"
               >
                 <option value="">-</option>
@@ -209,7 +209,7 @@ function trackEmailFallback(): void {
               <select
                 id="budget"
                 v-model="form.budget"
-                class="w-full border border-edge-subtle bg-base px-3 py-2 text-sm text-ink focus:border-neon"
+                class="w-full border border-edge-subtle bg-canvas px-3 py-2 text-sm text-ink focus:border-accent"
                 @focus="markFormStart"
               >
                 <option value="">-</option>
@@ -226,7 +226,7 @@ function trackEmailFallback(): void {
               v-model="form.message"
               required
               rows="6"
-              class="w-full border border-edge-subtle bg-base px-3 py-2 text-sm text-ink focus:border-neon"
+              class="w-full border border-edge-subtle bg-canvas px-3 py-2 text-sm text-ink focus:border-accent"
               :placeholder="contactPage.placeholders.message"
               @focus="markFormStart"
             />
@@ -239,28 +239,34 @@ function trackEmailFallback(): void {
             </button>
           </div>
 
-          <p v-if="status === 'success'" class="text-sm text-neon">{{ contactPage.successMessage }}</p>
+          <p v-if="status === 'success'" class="text-sm text-accent">{{ contactPage.successMessage }}</p>
           <p v-else-if="status === 'validation-error'" class="text-sm text-red-300">{{ contactPage.validationMessage }}</p>
           <p v-else-if="status === 'error'" class="text-sm text-red-300">{{ contactPage.errorMessage }}</p>
         </form>
       </article>
 
       <article class="panel-card">
-        <h2 class="text-lg font-semibold text-neon">{{ contactPage.detailsTitle }}</h2>
+        <h2 class="text-lg font-semibold text-ink">{{ contactPage.detailsTitle }}</h2>
         <ul class="mt-4 space-y-3 text-sm text-muted">
           <li>
             <span class="text-ink">{{ detailLabels.email }}:</span>
-            <a :href="`mailto:${content.company.email}`" class="ml-2 text-neon hover:text-neon-soft" @click="trackEmailFallback">{{ content.company.email }}</a>
+            <a :href="`mailto:${content.company.email}`" class="ml-2 text-accent hover:text-accent-strong" @click="trackEmailFallback">{{ content.company.email }}</a>
           </li>
           <li><span class="text-ink">{{ detailLabels.location }}:</span> <span class="ml-2">{{ content.company.location }}</span></li>
           <li><span class="text-ink">{{ detailLabels.responseTime }}:</span> <span class="ml-2">{{ content.company.responseWindow }}</span></li>
         </ul>
 
+        <h2 class="mt-8 text-lg font-semibold text-ink">{{ contactPage.quickTitle }}</h2>
+        <p class="mt-2 text-sm leading-7 text-muted">{{ content.channels.whatsappHint }}</p>
+        <div class="mt-4">
+          <ChannelLinks />
+        </div>
+
         <p class="mt-8 text-sm leading-7 text-muted">{{ contactPage.nextStep }}</p>
 
-        <p class="mt-8 text-xs uppercase tracking-[0.13em] text-dim">
+        <p class="mt-8 text-sm text-dim">
           {{ contactPage.emailFallback }}
-          <a :href="`mailto:${content.company.email}`" class="text-neon hover:text-neon-soft" @click="trackEmailFallback">{{ content.company.email }}</a>
+          <a :href="`mailto:${content.company.email}`" class="text-accent hover:text-accent-strong" @click="trackEmailFallback">{{ content.company.email }}</a>
         </p>
       </article>
     </div>

@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
 
 @import 'tailwindcss';
 
@@ -8,20 +8,37 @@
 @source '../**/*.js';
 @source '../**/*.vue';
 
+/*
+ * Tokens de design. As páginas só usam estes nomes (bg-canvas, text-accent, font-display…),
+ * então trocar de direção visual = trocar os valores abaixo, sem mexer nas views.
+ *
+ * Direção atual: A "Terminal sóbrio" (escuro neutro, um acento, hairlines, mono só nos rótulos)
+ * com números e cases no tratamento C "Editorial" (número grande protagonista).
+ *
+ * Para testar a B "Papel de engenharia" (clara): canvas #fafaf9, panel #ffffff, panel-strong #f4f4f2,
+ * edge-subtle #e7e5e4, edge-highlight #d6d3d1, ink #0c0a09, muted #57534e, dim #78716c,
+ * accent #15803d, accent-strong #166534, accent-ink #ffffff, on-accent #ffffff; fontes Geist / Geist Mono.
+ *
+ * Nunca dar a uma cor nome de tamanho do Tailwind (base, sm, lg, xl…): "--color-base" fazia
+ * text-base virar cor e apagava o texto (fundo e letra iguais).
+ */
 @theme {
-  --font-sans: 'JetBrains Mono', ui-monospace, monospace;
+  --font-display: 'JetBrains Mono', ui-monospace, monospace;
+  --font-sans: 'IBM Plex Sans', ui-sans-serif, system-ui, sans-serif;
   --font-mono: 'JetBrains Mono', ui-monospace, monospace;
 
-  --color-base: #0d1117;
-  --color-panel: #161b22;
-  --color-panel-strong: #11161e;
-  --color-edge-subtle: #21262d;
-  --color-edge-highlight: #30363d;
-  --color-neon: #22c55e;
-  --color-neon-soft: #4ade80;
-  --color-ink: #f3f4f6;
-  --color-muted: #9ca3af;
-  --color-dim: #6b7280;
+  --color-canvas: #0a0a0a;
+  --color-panel: #111111;
+  --color-panel-strong: #0e0e0e;
+  --color-edge-subtle: #1f1f1f;
+  --color-edge-highlight: #2e2e2e;
+  --color-accent: #22c55e;
+  --color-accent-strong: #4ade80;
+  --color-on-accent: #0a0a0a;
+  --color-ink: #ededed;
+  --color-muted: #a3a3a3;
+  --color-dim: #737373;
+  --color-terminal: #070707;
 }
 
 * {
@@ -35,89 +52,487 @@ html {
 body {
   margin: 0;
   min-height: 100vh;
-  background: #0d1117;
-  color: #f3f4f6;
-  font-family: 'JetBrains Mono', ui-monospace, monospace;
+  background: var(--color-canvas);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
   line-height: 1.6;
 }
 
+h1,
+h2,
+h3 {
+  font-family: var(--font-display);
+  text-wrap: balance;
+}
+
+p {
+  text-wrap: pretty;
+}
+
 ::selection {
-  background: rgba(34, 197, 94, 0.28);
-  color: #f3f4f6;
+  background: color-mix(in srgb, var(--color-accent) 28%, transparent);
+  color: var(--color-ink);
 }
 
 *:focus-visible {
-  outline: 2px solid rgba(34, 197, 94, 0.5);
+  outline: 2px solid color-mix(in srgb, var(--color-accent) 50%, transparent);
   outline-offset: 2px;
 }
 
-.bg-grid {
-  background-color: #0d1117;
-  background-image:
-    linear-gradient(to right, rgba(33, 38, 45, 0.35) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(33, 38, 45, 0.35) 1px, transparent 1px);
-  background-size: 34px 34px;
+/* Rótulo curto em mono, caixa alta. Só para rótulos de 1–3 palavras, nunca para frase. */
+.label {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: var(--color-dim);
 }
 
 .panel-card {
-  border: 1px solid #21262d;
+  border: 1px solid var(--color-edge-subtle);
   border-radius: 0.125rem;
-  background: linear-gradient(145deg, #161b22 0%, #131820 100%);
+  background: var(--color-panel);
   padding: 1.5rem;
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  transition: border-color 0.2s ease;
 }
 
 .panel-card:hover {
-  border-color: #30363d;
-  box-shadow: 0 0 15px rgba(34, 197, 94, 0.14);
+  border-color: var(--color-edge-highlight);
+}
+
+.btn-primary,
+.btn-secondary {
+  border-radius: 0.125rem;
+  padding: 0.625rem 1rem;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
 }
 
 .btn-primary {
-  border: 1px solid #22c55e;
-  border-radius: 0.125rem;
-  background: #22c55e;
-  color: #0d1117;
-  padding: 0.625rem 1rem;
-  font-size: 0.75rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.12em;
-  transition: background-color 0.15s ease, box-shadow 0.2s ease;
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  overflow: hidden;
+  border: 1px solid var(--color-accent);
+  background: var(--color-accent);
+  color: var(--color-on-accent);
+  transition: background-color 0.15s ease, transform 0.15s ease, box-shadow 0.25s ease;
+}
+
+/* Reflexo que atravessa o botão no hover */
+.btn-primary::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(105deg, transparent 35%, rgb(255 255 255 / 0.35) 50%, transparent 65%);
+  transform: translateX(-120%);
+  transition: transform 0.6s ease;
+  pointer-events: none;
+}
+
+.btn-primary:hover::after {
+  transform: translateX(120%);
 }
 
 .btn-primary:hover {
-  background: #4ade80;
-  box-shadow: 0 0 15px rgba(34, 197, 94, 0.3);
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--color-accent) 18%, transparent);
+}
+
+.btn-primary:active,
+.btn-secondary:active {
+  transform: scale(0.97);
+}
+
+.btn-arrow {
+  display: inline-block;
+  transition: transform 0.2s ease;
+}
+
+.btn-primary:hover .btn-arrow,
+.link-action:hover .btn-arrow {
+  transform: translateX(4px);
+}
+
+.btn-primary:hover {
+  background: var(--color-accent-strong);
 }
 
 .btn-secondary {
-  border: 1px solid #30363d;
-  border-radius: 0.125rem;
+  border: 1px solid var(--color-edge-highlight);
   background: transparent;
-  color: #9ca3af;
-  padding: 0.625rem 1rem;
-  font-size: 0.75rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.12em;
+  color: var(--color-muted);
   transition: border-color 0.15s ease, color 0.15s ease;
 }
 
 .btn-secondary:hover {
-  border-color: rgba(34, 197, 94, 0.5);
-  color: #4ade80;
+  border-color: color-mix(in srgb, var(--color-accent) 50%, transparent);
+  color: var(--color-ink);
+}
+
+/* Link de ação secundária, sem caixa: evita dois botões iguais lado a lado */
+.link-action {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--color-muted);
+  text-decoration: underline;
+  text-decoration-color: var(--color-edge-highlight);
+  text-underline-offset: 0.35em;
+  transition: color 0.15s ease, text-decoration-color 0.15s ease;
+}
+
+.link-action:hover {
+  color: var(--color-ink);
+  text-decoration-color: var(--color-accent);
 }
 
 .badge {
   display: inline-flex;
-  border: 1px solid rgba(34, 197, 94, 0.25);
+  border: 1px solid var(--color-edge-highlight);
   border-radius: 0.125rem;
-  background: rgba(34, 197, 94, 0.1);
   padding: 0.2rem 0.45rem;
+  font-family: var(--font-mono);
   font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: var(--color-muted);
+}
+
+/* Número protagonista (tratamento C): grande, mono, alinhado à esquerda */
+.figure {
+  font-family: var(--font-display);
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: -0.03em;
+  font-variant-numeric: tabular-nums;
+  color: var(--color-ink);
+}
+
+/* Marca de conteúdo que o Mateus ainda precisa confirmar (temporária, fica fora dos tokens) */
+.pending {
+  display: inline-flex;
+  margin-left: 0.4rem;
+  border: 1px dashed #f59e0b;
+  padding: 0 0.3rem;
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
   font-weight: 700;
-  letter-spacing: 0.08em;
-  color: #4ade80;
+  letter-spacing: 0.06em;
+  color: #fbbf24;
+  vertical-align: middle;
+}
+
+/*
+ * Assinatura única do site: no hero, uma grade de hairlines aparece só ao redor do ponteiro
+ * (ponteiro fino e sem reduced-motion; ver ReactiveGrid.vue). Sem grade fixa no fundo.
+ */
+.reactive-grid {
+  position: relative;
+  isolation: isolate;
+}
+
+.reactive-grid::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background-image:
+    linear-gradient(to right, var(--color-edge-highlight) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--color-edge-highlight) 1px, transparent 1px);
+  background-size: 34px 34px;
+  opacity: var(--grid-on, 0);
+  transition: opacity 0.3s ease;
+  mask-image: radial-gradient(220px circle at var(--mx, 50%) var(--my, 50%), #000 0%, transparent 100%);
+}
+
+.terminal {
+  border: 1px solid var(--color-edge-highlight);
+  background: var(--color-terminal);
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  line-height: 1.9;
+}
+
+/* Brilho verde que segue o ponteiro no hero, sobre um brilho ambiente que deriva devagar */
+.reactive-glow {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.reactive-glow::before,
+.reactive-glow::after {
+  content: '';
+  position: absolute;
+  border-radius: 9999px;
+}
+
+.reactive-glow::before {
+  width: 46rem;
+  height: 46rem;
+  right: -14rem;
+  top: -18rem;
+  background: radial-gradient(closest-side, color-mix(in srgb, var(--color-accent) 13%, transparent), transparent);
+  animation: glow-drift 18s ease-in-out infinite alternate;
+}
+
+.reactive-glow::after {
+  width: 26rem;
+  height: 26rem;
+  left: calc(var(--mx, -40rem) - 13rem);
+  top: calc(var(--my, -40rem) - 13rem);
+  background: radial-gradient(closest-side, color-mix(in srgb, var(--color-accent) 16%, transparent), transparent);
+  opacity: var(--grid-on, 0);
+  transition: opacity 0.4s ease;
+}
+
+@keyframes glow-drift {
+  to {
+    transform: translate(-9rem, 7rem) scale(1.15);
+  }
+}
+
+.terminal-live .terminal-line.is-on {
+  animation: line-in 0.25s ease-out;
+}
+
+@keyframes line-in {
+  from {
+    opacity: 0;
+    transform: translateY(3px);
+  }
+}
+
+.caret {
+  animation: caret-blink 1s steps(1) infinite;
+}
+
+@keyframes caret-blink {
+  50% {
+    opacity: 0;
+  }
+}
+
+/* Cascata ao rolar (v-reveal). Só recebe .reveal o que está abaixo da dobra. */
+.reveal {
+  opacity: 0;
+  transform: translateY(18px);
+  transition: opacity 0.7s cubic-bezier(0.2, 0.7, 0.2, 1), transform 0.7s cubic-bezier(0.2, 0.7, 0.2, 1);
+  transition-delay: var(--reveal-delay, 0ms);
+}
+
+.reveal.is-in {
+  opacity: 1;
+  transform: none;
+}
+
+/* Card com inclinação 3D e imagem em parallax (v-tilt) e brilho sob o ponteiro (v-spotlight) */
+.tilt {
+  transform: perspective(900px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg));
+  transition: transform 0.35s cubic-bezier(0.2, 0.7, 0.2, 1), border-color 0.2s ease;
+  will-change: transform;
+}
+
+.tilt-frame {
+  overflow: hidden;
+}
+
+.tilt-media {
+  transform: translate(var(--px, 0px), var(--py, 0px)) scale(1.05);
+  transition: transform 0.35s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+
+.spotlight {
+  position: relative;
+  isolation: isolate;
+}
+
+.spotlight::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background: radial-gradient(320px circle at var(--mx, 50%) var(--my, 50%), color-mix(in srgb, var(--color-accent) 12%, transparent), transparent 70%);
+  opacity: var(--spot, 0);
+  transition: opacity 0.3s ease;
+}
+
+/* Card de case sem tela (cliente anônimo): grade sutil no lugar da imagem */
+.case-stack {
+  background-color: var(--color-panel-strong);
+  background-image:
+    linear-gradient(var(--color-edge-subtle) 1px, transparent 1px),
+    linear-gradient(90deg, var(--color-edge-subtle) 1px, transparent 1px);
+  background-size: 28px 28px;
+}
+
+/* Linha da etapa do processo: desenha com a rolagem (ProcessTimeline.vue) */
+.timeline-fill {
+  transition: transform 0.12s linear;
+}
+
+.timeline-dot.is-on {
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--color-accent) 18%, transparent);
+}
+
+/* Faixa de stack que rola sozinha; para no hover */
+.marquee {
+  overflow: hidden;
+  mask-image: linear-gradient(to right, transparent, #000 8%, #000 92%, transparent);
+}
+
+.marquee-track {
+  display: flex;
+  width: max-content;
+  animation: marquee 38s linear infinite;
+}
+
+.marquee:hover .marquee-track {
+  animation-play-state: paused;
+}
+
+.marquee-list {
+  display: flex;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.marquee-item {
+  margin-right: 0.75rem;
+  border: 1px solid var(--color-edge-highlight);
+  padding: 0.55rem 0.9rem;
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  font-weight: 500;
+  white-space: nowrap;
+  color: var(--color-muted);
+  transition: color 0.2s ease, border-color 0.2s ease;
+}
+
+.marquee-item:hover {
+  border-color: var(--color-accent);
+  color: var(--color-ink);
+}
+
+@keyframes marquee {
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+/* Sublinhado que cresce da esquerda (links de texto) */
+.link-line {
+  background-image: linear-gradient(var(--color-accent), var(--color-accent));
+  background-repeat: no-repeat;
+  background-position: 0 100%;
+  background-size: 0% 1px;
+  transition: background-size 0.3s ease, color 0.15s ease;
+}
+
+.link-line:hover,
+.link-line.router-link-exact-active {
+  background-size: 100% 1px;
+}
+
+/* Botão flutuante do WhatsApp: some quando o rodapé aparece (não cobre o e-mail no celular) */
+.wa-float {
+  transition: opacity 0.25s ease, transform 0.25s ease;
+}
+
+.wa-float.is-hidden {
+  opacity: 0;
+  transform: translateY(16px);
+  pointer-events: none;
+}
+
+.wa-dot {
+  position: absolute;
+  top: -3px;
+  right: -3px;
+  width: 10px;
+  height: 10px;
+  border: 2px solid var(--color-canvas);
+  border-radius: 9999px;
+  background: var(--color-accent-strong);
+}
+
+.wa-dot::after {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  border-radius: 9999px;
+  border: 2px solid var(--color-accent-strong);
+  animation: wa-ping 2.4s ease-out 3;
+}
+
+@keyframes wa-ping {
+  to {
+    opacity: 0;
+    transform: scale(2.4);
+  }
+}
+
+/* Montador de escopo */
+.scope-option {
+  transition: border-color 0.15s ease, color 0.15s ease, background-color 0.15s ease, transform 0.15s ease;
+}
+
+.scope-option:active {
+  transform: scale(0.98);
+}
+
+.scope-line {
+  animation: line-in 0.3s ease-out;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  .marquee-track {
+    animation: none;
+    width: auto;
+  }
+
+  .marquee-list {
+    flex-wrap: wrap;
+    row-gap: 0.75rem;
+  }
+
+  .marquee-copy {
+    display: none;
+  }
+
+  .marquee {
+    mask-image: none;
+  }
+
+  .reactive-glow::before,
+  .wa-dot::after,
+  .caret {
+    animation: none;
+  }
+
+  *,
+  *::before,
+  *::after {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+  }
 }
 
 @media (max-width: 640px) {

@@ -11,24 +11,27 @@ const aboutPage = computed(() => content.value.aboutPage)
 <template>
   <section class="px-4 py-14 sm:px-6 sm:py-16">
     <div class="mx-auto w-full max-w-6xl">
-      <p class="text-xs uppercase tracking-[0.18em] text-dim">{{ aboutPage.tag }}</p>
-      <h1 class="mt-3 max-w-4xl text-3xl font-semibold text-ink sm:text-4xl">{{ aboutPage.title }}</h1>
+      <h1 class="max-w-4xl text-3xl font-semibold text-ink sm:text-4xl">{{ aboutPage.title }}</h1>
       <p class="mt-4 max-w-4xl text-sm leading-7 text-muted sm:text-base">
         {{ aboutPage.intro }}
       </p>
 
       <div class="mt-8 space-y-3">
-        <p v-for="paragraph in aboutPage.story" :key="paragraph" class="text-sm leading-7 text-muted">
+        <p v-for="paragraph in aboutPage.story" :key="paragraph" class="max-w-3xl text-base leading-7 text-muted">
           {{ paragraph }}
         </p>
       </div>
 
-      <div class="mt-10 grid gap-5 md:grid-cols-3">
-        <article v-for="pillar in aboutPage.pillars" :key="pillar.title" class="panel-card">
-          <h2 class="text-lg font-semibold text-neon">{{ pillar.title }}</h2>
-          <p class="mt-3 text-sm leading-7 text-muted">{{ pillar.body }}</p>
-        </article>
-      </div>
+      <dl class="mt-12 max-w-4xl border-b border-edge-subtle">
+        <div
+          v-for="pillar in aboutPage.pillars"
+          :key="pillar.title"
+          class="grid gap-2 border-t border-edge-highlight py-6 sm:grid-cols-[minmax(0,0.8fr)_minmax(0,1.2fr)] sm:gap-8"
+        >
+          <dt class="font-display text-base font-semibold text-ink">{{ pillar.title }}</dt>
+          <dd class="text-sm leading-7 text-muted">{{ pillar.body }}</dd>
+        </div>
+      </dl>
 
       <RouterLink :to="buildLocalizedPath(locale, 'contact')" class="btn-primary mt-8 inline-flex">{{ aboutPage.cta }}</RouterLink>
     </div>

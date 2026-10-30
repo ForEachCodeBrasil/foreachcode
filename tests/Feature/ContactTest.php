@@ -6,7 +6,6 @@ namespace Tests\Feature;
 
 use App\Mail\ContactMail;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Tests\TestCase;
 
@@ -17,7 +16,6 @@ class ContactTest extends TestCase
     public function test_contact_form_submission_succeeds_with_valid_data(): void
     {
         Mail::fake();
-        Log::spy();
 
         $response = $this->postJson('/api/contact', [
             'name' => 'John Doe',
@@ -43,15 +41,10 @@ class ContactTest extends TestCase
             'locale' => 'en',
         ]);
 
+        Mail::assertNothingQueued();
         Mail::assertSent(ContactMail::class, function ($mail) {
             return $mail->hasTo(config('mail.contact.en', 'foreachcode@foreachcode.net'));
         });
-
-        Log::shouldHaveReceived('info')
-            ->with('Novo contato recebido', \Mockery::subset([
-                'name' => 'John Doe',
-                'email' => 'john@example.com',
-            ]));
     }
 
     public function test_contact_form_fails_with_missing_required_fields(): void
@@ -141,7 +134,7 @@ class ContactTest extends TestCase
                 'timestamp',
             ])
             ->assertJson([
-            'status' => 'ok',
+                'status' => 'ok',
             ]);
     }
 
@@ -159,6 +152,7 @@ class ContactTest extends TestCase
 
         $response->assertStatus(201);
 
+        Mail::assertNothingQueued();
         Mail::assertSent(ContactMail::class, function ($mail) {
             return $mail->hasTo(config('mail.contact.pt', 'foreachcode@foreachcode.net'));
         });

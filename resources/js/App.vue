@@ -2,19 +2,21 @@
 import { RouterView } from 'vue-router'
 import AppHeader from './components/AppHeader.vue'
 import AppFooter from './components/AppFooter.vue'
+import WhatsAppButton from './components/WhatsAppButton.vue'
 </script>
 
 <template>
-  <div class="min-h-screen bg-base text-ink">
+  <div class="min-h-screen bg-canvas text-ink">
     <AppHeader />
     <main>
       <RouterView v-slot="{ Component }">
-        <Transition name="page" mode="out-in" appear>
+        <Transition name="page" mode="out-in">
           <component :is="Component" />
         </Transition>
       </RouterView>
     </main>
     <AppFooter />
+    <WhatsAppButton />
   </div>
 </template>
 

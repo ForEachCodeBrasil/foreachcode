@@ -4,17 +4,13 @@ declare(strict_types=1);
 
 namespace App\Mail;
 
-use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
-use Illuminate\Queue\SerializesModels;
 
-class ContactMail extends Mailable implements ShouldQueue
+// Enviado na hora, sem fila: o deploy não roda worker de fila.
+class ContactMail extends Mailable
 {
-    use Queueable, SerializesModels;
-
     public function __construct(
         public array $contactData
     ) {}

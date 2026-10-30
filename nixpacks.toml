@@ -3,9 +3,9 @@
     MAIL_MAILER = "resend"
     MAIL_FROM_ADDRESS = "noreply@foreachcode.net"
     MAIL_FROM_NAME = "ForEachCode Website"
-    MAIL_CONTACT_EMAIL = "contato@foreachcode.net"
-    MAIL_CONTACT_EMAIL_PT = "contato@foreachcode.net"
-    MAIL_CONTACT_EMAIL_EN = "contact@foreachcode.net"
+    MAIL_CONTACT_EMAIL = "foreachcode@foreachcode.net"
+    MAIL_CONTACT_EMAIL_PT = "foreachcode@foreachcode.net"
+    MAIL_CONTACT_EMAIL_EN = "foreachcode@foreachcode.net"
 
 [phases.setup]
 # PHP 8.4.27 (CVE-2026-109618/109619): nixpkgs pinned to a commit with php84 >= 8.4.27

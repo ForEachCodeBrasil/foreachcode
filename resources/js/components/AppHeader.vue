@@ -25,10 +25,10 @@ function isActive(slug: string): boolean {
 </script>
 
 <template>
-  <header class="sticky top-0 z-50 border-b border-edge-subtle/90 bg-panel/90 backdrop-blur-md">
+  <header class="sticky top-0 z-50 border-b border-edge-subtle bg-canvas">
     <div class="mx-auto flex h-16 w-full max-w-6xl items-center justify-between px-4 sm:px-6">
-      <RouterLink :to="localizedPath('')" class="inline-flex items-center gap-3 text-sm tracking-[0.18em] text-ink" @click="closeMenu">
-        <span class="inline-block h-2.5 w-2.5 bg-neon shadow-[0_0_10px_rgba(34,197,94,0.8)]" />
+      <RouterLink :to="localizedPath('')" class="inline-flex items-center gap-3 font-mono text-sm tracking-[0.18em] text-ink" @click="closeMenu">
+        <span class="inline-block h-2.5 w-2.5 bg-accent" />
         <span class="font-semibold uppercase">{{ content.company.shortName }}</span>
       </RouterLink>
 
@@ -37,8 +37,8 @@ function isActive(slug: string): boolean {
           v-for="item in content.navLinks"
           :key="item.slug"
           :to="localizedPath(item.slug)"
-          class="text-xs uppercase tracking-[0.15em] text-muted transition-colors duration-150 hover:text-ink"
-          :class="isActive(item.slug) ? 'text-neon' : ''"
+          class="link-line pb-1 text-xs uppercase tracking-[0.15em] text-muted transition-colors duration-150 hover:text-ink"
+          :class="isActive(item.slug) ? 'text-accent' : ''"
         >
           {{ item.label }}
         </RouterLink>
@@ -49,7 +49,7 @@ function isActive(slug: string): boolean {
         <RouterLink
           :to="ptPath"
           class="border border-edge-subtle px-2 py-1 text-[10px] font-semibold uppercase tracking-[0.12em]"
-          :class="locale === 'pt' ? 'border-neon text-neon' : 'text-muted hover:text-ink'"
+          :class="locale === 'pt' ? 'border-accent text-accent' : 'text-muted hover:text-ink'"
           @click="closeMenu"
         >
           {{ content.languageSwitcher.pt }}
@@ -57,7 +57,7 @@ function isActive(slug: string): boolean {
         <RouterLink
           :to="enPath"
           class="border border-edge-subtle px-2 py-1 text-[10px] font-semibold uppercase tracking-[0.12em]"
-          :class="locale === 'en' ? 'border-neon text-neon' : 'text-muted hover:text-ink'"
+          :class="locale === 'en' ? 'border-accent text-accent' : 'text-muted hover:text-ink'"
           @click="closeMenu"
         >
           {{ content.languageSwitcher.en }}
@@ -86,7 +86,7 @@ function isActive(slug: string): boolean {
           :key="item.slug"
           :to="localizedPath(item.slug)"
           class="border-b border-edge-subtle/50 py-3 text-xs uppercase tracking-[0.15em] text-muted transition-colors duration-150 hover:text-ink"
-          :class="isActive(item.slug) ? 'text-neon' : ''"
+          :class="isActive(item.slug) ? 'text-accent' : ''"
           @click="closeMenu"
         >
           {{ item.label }}
@@ -97,7 +97,7 @@ function isActive(slug: string): boolean {
           <RouterLink
             :to="ptPath"
             class="border border-edge-subtle px-2 py-1 text-[10px] font-semibold uppercase tracking-[0.12em]"
-            :class="locale === 'pt' ? 'border-neon text-neon' : 'text-muted hover:text-ink'"
+            :class="locale === 'pt' ? 'border-accent text-accent' : 'text-muted hover:text-ink'"
             @click="closeMenu"
           >
             {{ content.languageSwitcher.pt }}
@@ -105,7 +105,7 @@ function isActive(slug: string): boolean {
           <RouterLink
             :to="enPath"
             class="border border-edge-subtle px-2 py-1 text-[10px] font-semibold uppercase tracking-[0.12em]"
-            :class="locale === 'en' ? 'border-neon text-neon' : 'text-muted hover:text-ink'"
+            :class="locale === 'en' ? 'border-accent text-accent' : 'text-muted hover:text-ink'"
             @click="closeMenu"
           >
             {{ content.languageSwitcher.en }}

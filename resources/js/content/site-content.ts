@@ -17,6 +17,27 @@ export const defaultLocale: Locale = 'pt'
 
 const supportedLocales: Locale[] = ['pt', 'en']
 
+export const pageSlugs: Record<PageKey, string> = {
+  home: '',
+  services: 'services',
+  work: 'work',
+  about: 'about',
+  team: 'team',
+  skills: 'skills',
+  philosophy: 'philosophy',
+  contact: 'contact',
+}
+
+// WhatsApp confirmado pelo Mateus (30/10/2026). Ainda não há link de agenda: o CTA de 30 min saiu do site.
+export const contactChannels = {
+  whatsappNumber: '5561992419461',
+  whatsappDisplay: '+55 61 99241-9461',
+  companyGithub: 'https://github.com/ForEachCodeBrasil',
+  founderLinkedin: 'https://www.linkedin.com/in/mateus-galasso',
+}
+
+export const pendingMark = '[CONFIRMAR]'
+
 type NavLink = {
   slug: string
   label: string
@@ -34,20 +55,61 @@ type HomeHighlight = {
   body: string
 }
 
+type TerminalLine = {
+  kind: 'cmd' | 'out' | 'ok'
+  text: string
+}
+
+type Stat = {
+  value: number
+  prefix?: string
+  suffix?: string
+  label: string
+  pending?: boolean
+}
+
+type ProcessStep = {
+  title: string
+  duration: string
+  deliverable: string
+}
+
 type ServicePackage = {
   title: string
   idealFor: string
   timeline: string
+  priceFrom: string
   items: string[]
+}
+
+type CaseMetric = {
+  label: string
+  value: string
+}
+
+type CaseImage = {
+  src: string
+  alt: string
+  caption: string
+  // Versão menor para o card da home.
+  cardSrc?: string
+  width?: number
+  height?: number
 }
 
 type CaseStudy = {
   title: string
-  context: string
-  challenge: string
+  kind: string
+  status: string
+  own?: boolean
+  problem: string
   solution: string
   result: string
-  image?: string
+  stack: string[]
+  metrics: CaseMetric[]
+  image?: CaseImage
+  // Telas extras, só na página de cases.
+  gallery?: CaseImage[]
 }
 
 type TeamMember = {
@@ -70,6 +132,11 @@ type Principle = {
   body: string
 }
 
+type FaqItem = {
+  q: string
+  a: string
+}
+
 type LocalizedContent = {
   company: {
     shortName: string
@@ -84,29 +151,81 @@ type LocalizedContent = {
     en: string
   }
   navLinks: NavLink[]
+  channels: {
+    whatsappLabel: string
+    whatsappMessage: string
+    whatsappHint: string
+  }
   home: {
     badge: string
     title: string
     subtitle: string
-    supporting: string
     primaryCta: string
     secondaryCta: string
+    terminalTitle: string
+    terminal: TerminalLine[]
+    statsTitle: string
+    stats: Stat[]
+    stackTitle: string
+    casesTitle: string
+    casesBody: string
+    casesCta: string
+    highlightsTitle: string
     highlights: HomeHighlight[]
     processTitle: string
     processBody: string
-    processSteps: string[]
+    processSteps: ProcessStep[]
+    processDeliverable: string
+    founder: {
+      tag: string
+      title: string
+      points: string[]
+      cta: string
+    }
+    closing: {
+      title: string
+      body: string
+    }
   }
   servicesPage: {
     tag: string
     title: string
     intro: string
+    priceLabel: string
+    priceNote: string
     packages: ServicePackage[]
     cta: string
+    simulator: {
+      title: string
+      intro: string
+      typeLabel: string
+      deadlineLabel: string
+      extrasLabel: string
+      types: string[]
+      deadlines: string[]
+      extras: string[]
+      resultLabel: string
+      summaryIntro: string
+      note: string
+      cta: string
+    }
+    faq: {
+      title: string
+      items: FaqItem[]
+    }
   }
   workPage: {
     tag: string
     title: string
     intro: string
+    labels: {
+      problem: string
+      solution: string
+      result: string
+      stack: string
+      metrics: string
+    }
+    ownTitle: string
     caseStudies: CaseStudy[]
     cta: string
   }
@@ -141,6 +260,12 @@ type LocalizedContent = {
     title: string
     intro: string
     detailsTitle: string
+    detailLabels: {
+      email: string
+      location: string
+      responseTime: string
+    }
+    quickTitle: string
     nextStep: string
     formTitle: string
     submitLabel: string
@@ -168,8 +293,14 @@ type LocalizedContent = {
   }
   footer: {
     tagline: string
+    elsewhere: string
   }
   metadata: Record<PageKey, PageMeta>
+}
+
+const founderBio = {
+  pt: 'Engenheiro de software sênior há mais de 20 anos, com PHP e Laravel no centro. Trabalha com pagamentos e fintech (Stripe, inclusive Stripe Connect, assinaturas e repasses), infraestrutura na AWS e IA aplicada a processos operacionais, com LLMs integrados a sistemas em produção. Desenha a arquitetura e escreve o código de cada entrega.',
+  en: 'Senior software engineer with 20+ years of experience, centered on PHP and Laravel. Works on payments and fintech (Stripe, including Stripe Connect, subscriptions and payouts), AWS infrastructure, and AI applied to operations, with LLMs wired into production systems. Designs the architecture and writes the code for every delivery.',
 }
 
 const content: Record<Locale, LocalizedContent> = {
@@ -177,9 +308,9 @@ const content: Record<Locale, LocalizedContent> = {
     company: {
       shortName: 'ForEachCode',
       legalName: 'ForEachCode Software Studio',
-      email: 'contato@foreachcode.net',
-      location: 'Sao Paulo, Brazil',
-      responseWindow: 'Em ate 1 dia util',
+      email: 'foreachcode@foreachcode.net',
+      location: 'Atendimento remoto',
+      responseWindow: 'Em até 1 dia útil',
     },
     languageSwitcher: {
       label: 'Idioma',
@@ -187,166 +318,317 @@ const content: Record<Locale, LocalizedContent> = {
       en: 'EN',
     },
     navLinks: [
-      { slug: '', label: 'Inicio' },
-      { slug: 'services', label: 'Servicos' },
+      { slug: '', label: 'Início' },
+      { slug: 'services', label: 'Serviços' },
       { slug: 'work', label: 'Cases' },
       { slug: 'about', label: 'Sobre' },
       { slug: 'team', label: 'Time' },
       { slug: 'contact', label: 'Contato' },
     ],
+    channels: {
+      whatsappLabel: 'Chamar no WhatsApp',
+      whatsappMessage: 'Olá! Vim pelo site da ForEachCode e quero falar sobre um projeto.',
+      whatsappHint: 'Sem compromisso: você conta o problema e eu digo se faz sentido seguir.',
+    },
     home: {
       badge: 'Software para SaaS B2B e PMEs',
-      title: 'Projetos de software com escopo fechado e entrega previsivel.',
-      subtitle: 'Lideranca tecnica senior, execucao direta e foco em resultado de negocio.',
-      supporting: 'Da descoberta ao deploy: arquitetura, desenvolvimento e handoff com clareza de prioridade, prazo e custo.',
-      primaryCta: 'Iniciar diagnostico',
+      title: 'Projetos de software com escopo fechado e entrega previsível.',
+      subtitle: 'Liderança técnica sênior e execução direta, com especialidade em pagamentos, Laravel e AWS. Da descoberta ao deploy, com prioridade, prazo e custo claros.',
+      primaryCta: 'Pedir diagnóstico',
       secondaryCta: 'Ver cases',
+      terminalTitle: 'foreachcode — projeto',
+      terminal: [
+        { kind: 'cmd', text: 'foreachcode diagnose --projeto seu-saas' },
+        { kind: 'out', text: 'lendo contexto, restrições e prazo…' },
+        { kind: 'ok', text: 'riscos mapeados · escopo dividido em fases' },
+        { kind: 'cmd', text: 'foreachcode plan --entregas quinzenais' },
+        { kind: 'out', text: 'fase 1 discovery · fase 2 build · fase 3 handoff' },
+        { kind: 'ok', text: 'roadmap com prazo por fase' },
+        { kind: 'cmd', text: 'php artisan test --parallel' },
+        { kind: 'ok', text: 'testes passando · cobertura nos fluxos críticos' },
+        { kind: 'cmd', text: 'foreachcode deploy --producao' },
+        { kind: 'ok', text: 'em produção · monitorado · documentado' },
+      ],
+      statsTitle: 'Em números',
+      stats: [
+        { value: 20, suffix: '+', label: 'anos de experiência com software' },
+        { value: 5, label: 'cases com código real: 2 de clientes e 3 produtos próprios' },
+        { value: 1, label: 'dia útil para responder um contato' },
+        { value: 2, label: 'idiomas de atendimento: português e inglês' },
+      ],
+      stackTitle: 'Stack do dia a dia',
+      casesTitle: 'Projetos com código de verdade',
+      casesBody: 'Projetos em que eu escrevi a maior parte do código. Os de clientes aparecem sem nome.',
+      casesCta: 'Ver os 5 cases',
+      highlightsTitle: 'Como o trabalho é conduzido, do primeiro dia à produção.',
       highlights: [
         {
           title: 'Escopo fechado por fases',
-          body: 'Planejamento com entregas quinzenais, riscos explicitos e decisoes tecnicas documentadas.',
+          body: 'Planejamento com entregas quinzenais, riscos explícitos e decisões técnicas documentadas.',
         },
         {
-          title: 'Execucao senior ponta a ponta',
-          body: 'Sem repasse para time junior: quem desenha a solucao tambem implementa e acompanha producao.',
+          title: 'Execução sênior ponta a ponta',
+          body: 'Sem repasse para time júnior: quem desenha a solução também implementa e acompanha a produção.',
         },
         {
-          title: 'Qualidade orientada a operacao',
-          body: 'Observabilidade, testes e padroes de manutencao para o produto evoluir sem retrabalho constante.',
+          title: 'Qualidade orientada à operação',
+          body: 'Observabilidade, testes e padrões de manutenção para o produto evoluir sem retrabalho constante.',
         },
       ],
       processTitle: 'Processo de entrega',
-      processBody: 'Um fluxo simples para reduzir ambiguidade, acelerar decisao e manter previsibilidade durante a execucao.',
-      processSteps: ['Diagnostico tecnico', 'Escopo e plano de entrega', 'Implementacao iterativa', 'Handoff e evolucao assistida'],
+      processBody: 'Quatro etapas, cada uma com prazo e um entregável que você recebe na mão.',
+      processDeliverable: 'Entregável',
+      processSteps: [
+        { title: 'Diagnóstico técnico', duration: 'Conversa curta + resposta em 1 dia útil', deliverable: 'Leitura do problema e recomendação de caminho' },
+        { title: 'Escopo e plano de entrega', duration: '1 a 3 semanas', deliverable: 'Arquitetura, riscos e roadmap por fase' },
+        { title: 'Implementação iterativa', duration: '4 a 12 semanas', deliverable: 'Entregas quinzenais em ambiente de homologação' },
+        { title: 'Handoff e evolução assistida', duration: 'Contínuo', deliverable: 'Documentação, monitoramento e suporte pós-entrega' },
+      ],
+      founder: {
+        tag: 'Quem conduz o projeto',
+        title: 'Mateus Galasso, fundador',
+        points: ['Pagamentos e Stripe', 'AWS', 'IA em produção', 'Laravel + Vue'],
+        cta: 'Conhecer o time',
+      },
+      closing: {
+        title: 'Tem um projeto travado ou um prazo apertado?',
+        body: 'Conte o contexto. Em até 1 dia útil você recebe uma leitura técnica e o próximo passo.',
+      },
     },
     servicesPage: {
-      tag: 'Servicos',
-      title: 'Pacotes para destravar produto com previsibilidade.',
-      intro: 'Cada pacote tem objetivo claro, escopo objetivo e prazo estimado para voce decidir rapido.',
+      tag: 'Serviços',
+      title: 'Pacotes para destravar o produto com previsibilidade.',
+      intro: 'Cada pacote tem objetivo, escopo e prazo estimado para você decidir rápido.',
+      priceLabel: 'Investimento',
+      priceNote: 'O valor depende do escopo e sai depois da conversa inicial.',
       packages: [
         {
           title: 'Discovery + Arquitetura',
-          idealFor: 'Ideal para produtos com gargalos tecnicos, backlog desorganizado ou decisoes bloqueadas.',
-          timeline: 'Prazo medio: 1-3 semanas',
+          idealFor: 'Para produtos com gargalos técnicos, backlog desorganizado ou decisões travadas.',
+          timeline: 'Prazo médio: 1 a 3 semanas',
+          priceFrom: 'Sob consulta',
           items: [
-            'Diagnostico de arquitetura e riscos',
-            'Roadmap tecnico priorizado por impacto',
-            'Plano de execucao com tradeoffs explicitos',
+            'Diagnóstico de arquitetura e riscos',
+            'Roadmap técnico priorizado por impacto',
+            'Plano de execução com tradeoffs explícitos',
           ],
         },
         {
-          title: 'Build de Modulo ou Produto',
-          idealFor: 'Ideal para novas features criticas, MVP B2B ou modernizacao de fluxos internos.',
-          timeline: 'Prazo medio: 4-12 semanas',
+          title: 'Build de Módulo ou Produto',
+          idealFor: 'Para features críticas, MVP B2B ou modernização de fluxos internos.',
+          timeline: 'Prazo médio: 4 a 12 semanas',
+          priceFrom: 'Sob consulta',
           items: [
-            'Backend, frontend e integracoes em um unico fluxo',
-            'Entregas incrementais com checkpoint de negocio',
-            'Documentacao tecnica e padrao de qualidade para manutencao',
+            'Backend, frontend e integrações em um único fluxo',
+            'Entregas incrementais com checkpoint de negócio',
+            'Documentação técnica e padrão de qualidade para manutenção',
           ],
         },
         {
-          title: 'Modernizacao e Escala',
-          idealFor: 'Ideal para sistemas legados com alto custo de mudanca e risco de operacao.',
-          timeline: 'Prazo medio: 6-16 semanas',
+          title: 'Modernização e Escala',
+          idealFor: 'Para sistemas legados com alto custo de mudança e risco de operação.',
+          timeline: 'Prazo médio: 6 a 16 semanas',
+          priceFrom: 'Sob consulta',
           items: [
-            'Refatoracao guiada por risco e impacto',
+            'Refatoração guiada por risco e impacto',
             'Melhoria de performance e confiabilidade',
-            'Apoio em deploy, monitoramento e evolucao continua',
+            'Apoio em deploy, monitoramento e evolução contínua',
           ],
         },
       ],
-      cta: 'Solicitar diagnostico',
+      cta: 'Pedir diagnóstico',
+      simulator: {
+        title: 'Monte o escopo',
+        intro: 'Marque o que o projeto envolve. O resumo sai pronto para mandar no WhatsApp.',
+        typeLabel: 'Tipo de projeto',
+        deadlineLabel: 'Prazo',
+        extrasLabel: 'O projeto envolve',
+        types: ['Consultoria técnica pontual', 'Discovery + Arquitetura', 'Build de Módulo ou Produto', 'Modernização e Escala'],
+        deadlines: ['Flexível', 'Normal (2 a 3 meses)', 'Urgente (menos de 4 semanas)'],
+        extras: ['Pagamentos (Stripe, assinaturas, repasses)', 'IA ou LLM em produção', 'App mobile ou API', 'Painel administrativo', 'Integração com sistema externo', 'Migração de sistema legado'],
+        resultLabel: 'Resumo do escopo',
+        summaryIntro: 'Olá! Vim pelo site da ForEachCode. Meu escopo:',
+        note: 'Sem preço automático: o valor sai da conversa, de acordo com o escopo.',
+        cta: 'Enviar resumo no WhatsApp',
+      },
+      faq: {
+        title: 'Perguntas frequentes',
+        items: [
+          {
+            q: 'Vocês emitem nota fiscal como PJ?',
+            a: 'Sim. A contratação é como pessoa jurídica, com nota fiscal de serviço.',
+          },
+          {
+            q: 'Atendem empresas de fora do Brasil e cobram em dólar?',
+            a: 'Sim. Para clientes no exterior, o contrato pode ser em USD, com pagamento por transferência internacional.',
+          },
+          {
+            q: 'Assinam NDA antes de conhecer o projeto?',
+            a: 'Sim. Se você preferir, assinamos o NDA antes da conversa técnica.',
+          },
+          {
+            q: 'Existe garantia depois da entrega?',
+            a: 'Defeitos encontrados em até 30 dias após a entrega de cada fase são corrigidos sem custo.',
+          },
+          {
+            q: 'Quem escreve o código?',
+            a: 'Quem desenha a solução também implementa. Não há repasse para time júnior.',
+          },
+        ],
+      },
     },
     workPage: {
       tag: 'Cases',
-      title: 'Resultados de projetos anonimizados.',
-      intro: 'Exemplos reais de problemas resolvidos para empresas B2B sem expor dados sensiveis de clientes.',
+      title: 'Problema, solução e resultado.',
+      intro: 'Dois projetos de clientes e três produtos próprios. Os números dos produtos saem do código de cada repositório, não de estimativa.',
+      labels: {
+        problem: 'Problema',
+        solution: 'Solução',
+        result: 'O que eu fiz',
+        stack: 'Stack',
+        metrics: 'Do repositório',
+      },
+      ownTitle: 'Produtos próprios',
       caseStudies: [
         {
-          title: 'Lycento - Plataforma SaaS de Pagamentos e Licenciamento',
-          context: 'Plataforma multi-tenant estilo Lemon Squeezy construída com Laravel 12 e Vue 3.',
-          challenge: 'Necessidade de uma plataforma global para gestão de produtos digitais, pagamentos recorrentes e geração/autenticação segura de licenças de software através de API.',
-          solution: 'Desenvolvimento full-stack implementando integração profunda com Stripe Connect, emissão de chaves de licença com validação de dispositivos, e painéis Analytics.',
-          result: 'Infraestrutura completa capaz de onboardar vendedores globalmente e processar pagamentos através de diferentes modelos (Pix, Cartão, Assinatura).',
-          image: '/images/projects/lycento.png',
+          title: 'Synopay',
+          kind: 'PDV cashless com pulseira RFID para eventos e hospitalidade',
+          status: 'Cliente · em produção',
+          problem: 'Bares, festivais e resorts precisavam vender sem dinheiro e sem cartão na fila: o cliente paga encostando a pulseira, e o operador precisa ver pedido, saldo e cozinha em tempo real.',
+          solution: 'Plataforma Laravel com PDV web, pulseira RFID com saldo, painel de cozinha e grade de pedidos em tempo real (Reverb), admin em Filament, API para o leitor móvel e pagamentos via Square, Stripe e CardKnox.',
+          result: 'Desenvolvedor principal: arquitetura, PDV, fluxo da pulseira, integrações de pagamento, reservas de spa e integração com o sistema de hotel (Opera), além do deploy no Laravel Cloud.',
+          stack: ['Laravel', 'Filament', 'Livewire', 'Octane', 'Reverb', 'Postgres', 'Stripe', 'Square'],
+          metrics: [],
+          image: {
+            src: '/images/cases/synopay-pos.webp',
+            cardSrc: '/images/cases/synopay-pos-card.webp',
+            width: 1600,
+            height: 1112,
+            alt: 'Tela do PDV da Synopay com a grade de produtos e um pedido de três itens no carrinho',
+            caption: 'Tela real do PDV. O nome do local e o do operador foram borrados.',
+          },
+          gallery: [
+            {
+              src: '/images/cases/synopay-rfid.webp',
+              width: 1600,
+              height: 1112,
+              alt: 'Janela de pagamento por pulseira RFID esperando a leitura da pulseira',
+              caption: 'Pagamento do pedido pela pulseira RFID.',
+            },
+          ],
         },
         {
-          title: 'BenderStack - Infraestrutura Q&A e API para Agentes de IA',
-          context: 'Plataforma completa para gestão de bots de IA com painel web e API segura.',
-          challenge: 'Proteger a API contra interações humanas diretas, impondo que todos os clientes provem ser agentes automatizados e previnindo acessos não autorizados.',
-          solution: 'Implementação de autenticação baseada em chaves Ed25519, assinaturas HMAC, e um sistema de Reverse CAPTCHA com Desafios LLM usando formato TOON.',
-          result: 'Ambiente Q&A operado exclusivamente por IA seguro contra abuso humano, com features completas de votação e sistema de reputação.',
-          image: '/images/projects/benderstack.png',
+          title: 'Backend de app social',
+          kind: 'Chat em tempo real e assinaturas nas lojas de apps',
+          status: 'Cliente',
+          problem: 'Um app social precisava de login por telefone, combinação por localização, conversas com tempo limitado e assinaturas pagas pela App Store e pelo Google Play, tudo com notificação em tempo real.',
+          solution: 'API Laravel com mensagens em tempo real (Reverb), filas no Horizon, validação de compras da Apple e do Google, push via Firebase, SMS e painel administrativo em Filament.',
+          result: 'Autor da maior parte do backend: modelagem, API do app, assinaturas nas duas lojas, notificações e painel de operação.',
+          stack: ['Laravel', 'Octane', 'Reverb', 'Horizon', 'Filament', 'Firebase', 'App Store API'],
+          metrics: [],
         },
         {
-          title: 'DevGen - Arquitetura de Dados Mock para Desenvolvedores',
-          context: 'Ferramenta desktop cross-platform construída com Rust (Tauri) e Vue 3.',
-          challenge: 'Desenvolvedores perdem muito tempo criando dados estruturados válidos manualmente para testes e desenvolvimento de aplicações.',
-          solution: 'Uma aplicação desktop de alta performance baseada no sistema tray para geração instantânea de dados estruturados e exportação para JSON nativamente.',
-          result: 'Utilitário rápido e leve consumindo mínima memória, com suporte a i18n e extensibilidade via arquitetura baseada em Traits no Rust.',
-          image: '/images/projects/devgen.png',
+          title: 'Carrinho Inteligente',
+          kind: 'Comparador de preços de supermercado',
+          status: 'Produto próprio · em desenvolvimento',
+          own: true,
+          problem: 'Quem faz compra do mês não sabe em qual mercado a lista inteira sai mais barata, nem se vale dividir a compra entre duas lojas.',
+          solution: 'Lista de compras que compara as lojas e mostra a compra mais barata em um mercado só ou dividida. Os preços vêm de nota fiscal (NFC-e), foto de etiqueta e encarte, lidos com IA, além de coletores de redes de atacado e varejo.',
+          result: 'Produto do zero: modelagem com Postgres/PostGIS, leitura de preços com Gemini via Prism, coletores por rede, cobrança recorrente e painel administrativo.',
+          stack: ['Laravel', 'Inertia', 'Vue 3', 'PostGIS', 'Prism', 'Gemini', 'Filament'],
+          metrics: [
+            { label: 'Início do projeto', value: '2025' },
+            { label: 'Preços lidos de nota, foto e encarte', value: 'IA' },
+          ],
+          image: {
+            src: '/images/cases/carrinho-inteligente.webp',
+            alt: 'Tela da lista de compras com quatro itens e o ranking de onde comprar mais barato',
+            caption: 'Tela real do app em desenvolvimento, com dados de teste.',
+          },
+        },
+        {
+          title: 'Lycento',
+          kind: 'Plataforma de pagamentos e licenciamento de software',
+          status: 'Produto próprio · pausado',
+          own: true,
+          problem: 'Vender software com cobrança única ou assinatura e emitir licenças validadas por API exigia juntar várias ferramentas soltas.',
+          solution: 'Plataforma multi-tenant no estilo Paddle/Lemon Squeezy: o vendedor cadastra produto e preço, recebe por Pix, cartão ou assinatura, e a API ativa e valida a licença por dispositivo.',
+          result: 'Arquitetura e implementação: painel do vendedor, portal do cliente, API de licenças com SDKs em JavaScript e Rust, e checkout com Stripe e AbacatePay.',
+          stack: ['Laravel 12', 'Inertia', 'Vue 3', 'Stripe', 'AbacatePay', 'Rust SDK'],
+          metrics: [],
+        },
+        {
+          title: 'DevGen',
+          kind: 'Gerador de dados de teste offline, open source',
+          status: 'Produto próprio · open source (MIT)',
+          own: true,
+          problem: 'Desenvolvedores perdem tempo criando à mão CPF, CNPJ, RG e outros dados válidos para testar sistemas.',
+          solution: 'App desktop para macOS que gera dados brasileiros válidos sem internet: pessoas, empresas, documentos e veículos, com exportação para uso em teste.',
+          result: 'Do zero ao 1.0: app Tauri com núcleo em Rust, interface em Vue, CI com testes e build assinado para macOS.',
+          stack: ['Rust', 'Tauri 2', 'Vue 3', 'TypeScript'],
+          metrics: [],
         },
       ],
       cta: 'Quero este tipo de resultado',
     },
     aboutPage: {
       tag: 'Sobre',
-      title: 'Time enxuto, senior e orientado a execucao.',
-      intro: 'A ForEachCode opera como parceiro tecnico para empresas que precisam avancar sem inflar estrutura.',
+      title: 'Time enxuto, sênior e orientado à execução.',
+      intro: 'A ForEachCode atua como parceiro técnico de empresas que precisam avançar sem inflar a estrutura.',
       story: [
-        'A empresa nasceu para resolver um problema comum em times de produto: muita reuniao, pouca entrega de impacto.',
-        'Nosso modelo privilegia clareza de escopo, comunicacao direta e responsabilidade sobre o comportamento em producao.',
-        'Atuamos remotamente com empresas no Brasil e no exterior, com foco em contextos B2B e operacoes com restricao real de prazo.',
+        'A empresa nasceu para resolver um problema comum em times de produto: muita reunião e pouca entrega de impacto.',
+        'Nosso modelo privilegia clareza de escopo, comunicação direta e responsabilidade pelo comportamento em produção.',
+        'Atuamos remotamente com empresas no Brasil e no exterior, com foco em contextos B2B e operações com restrição real de prazo.',
       ],
       pillars: [
         {
-          title: 'Sem burocracia desnecessaria',
-          body: 'Decisoes rapidas com base em risco, impacto e capacidade real de entrega.',
+          title: 'Sem burocracia desnecessária',
+          body: 'Decisões rápidas, com base em risco, impacto e capacidade real de entrega.',
         },
         {
-          title: 'Tecnologia a servico do negocio',
-          body: 'Stack e arquitetura escolhidas pelo problema que precisa ser resolvido, nao por tendencia.',
+          title: 'Tecnologia a serviço do negócio',
+          body: 'Stack e arquitetura escolhidas pelo problema a resolver, não por tendência.',
         },
         {
           title: 'Compromisso com resultado',
-          body: 'Nao paramos no merge: acompanhamos release, metricas e estabilidade apos entrega.',
+          body: 'O trabalho não para no merge: acompanhamos release, métricas e estabilidade depois da entrega.',
         },
       ],
       cta: 'Falar com a ForEachCode',
     },
     teamPage: {
       tag: 'Time',
-      title: 'Lideranca tecnica com responsabilidade ponta a ponta.',
-      intro: 'A execucao e liderada por Brett Humphreys e Mateus Galasso, combinando estrategia de produto e engenharia aplicada.',
+      title: 'Liderança técnica com responsabilidade ponta a ponta.',
+      intro: 'A execução é liderada por Mateus Galasso e Brett Humphreys, combinando estratégia de produto e engenharia aplicada.',
       members: [
+        {
+          name: 'Mateus Galasso',
+          role: 'Fundador',
+          bio: founderBio.pt,
+          linkedin: contactChannels.founderLinkedin,
+          github: 'https://github.com/mateusgalasso',
+          avatar: mateusHeadshot,
+        },
         {
           name: 'Brett Humphreys',
           role: 'Senior Full Cycle Developer',
           credentials: 'Veteran-owned · TS/SCI cleared',
-          bio: 'Major reformado do Exercito e engenheiro de software senior. Lidera arquitetura frontend e produto em campo; constroi com Vue, Flutter e Go. Membro do conselho da Homeland Security Foundation of America. Mais de 20 anos de lideranca e entrega, do comando a aplicacoes em producao.',
+          bio: 'Major reformado do Exército dos EUA e engenheiro de software sênior. Lidera arquitetura de frontend e produto em campo; constrói com Vue, Flutter e Go. Membro do conselho da Homeland Security Foundation of America. Mais de 20 anos de liderança e entrega, do comando a aplicações em produção.',
           linkedin: 'https://www.linkedin.com/in/humphreysbrett/',
           github: 'https://github.com/radiancelux',
           avatar: brettHeadshot,
-        },
-        {
-          name: 'Mateus Galasso',
-          role: 'Fundador',
-          bio: '20+ anos em tecnologia com foco em PHP, Laravel, Vue, DevOps e cloud. Atua na definicao tecnica e na execucao direta de entregas para produtos web e sistemas internos.',
-          linkedin: 'https://www.linkedin.com/in/mateus-galasso',
-          github: 'https://github.com/mateusgalasso',
-          avatar: mateusHeadshot,
         },
       ],
     },
     skillsPage: {
       tag: 'Stack',
-      title: 'Capacidade tecnica para construir, estabilizar e escalar.',
-      intro: 'Selecionamos ferramentas com base em manutencao, performance e aderencia ao contexto do cliente.',
+      title: 'Capacidade técnica para construir, estabilizar e escalar.',
+      intro: 'Escolhemos ferramentas pela manutenção, pela performance e pela aderência ao contexto do cliente.',
       groups: [
         {
           title: 'Frontend',
           points: [
-            'Vue 3 + TypeScript com arquitetura de componentes escalavel',
+            'Vue 3 + TypeScript com arquitetura de componentes escalável',
             'Interfaces responsivas com foco em clareza de uso',
             'Performance e acessibilidade como requisitos de entrega',
           ],
@@ -354,125 +636,132 @@ const content: Record<Locale, LocalizedContent> = {
         {
           title: 'Backend',
           points: [
-            'Laravel para APIs, jobs assincromos e integracoes',
-            'Modelagem de dados orientada a evolucao de produto',
-            'Padroes de erro, logs e testes para confiabilidade operacional',
+            'Laravel para APIs, jobs assíncronos e integrações',
+            'Modelagem de dados orientada à evolução do produto',
+            'Padrões de erro, logs e testes para confiabilidade operacional',
           ],
         },
         {
           title: 'Cloud e DevOps',
           points: [
-            'Ambientes containerizados e pipelines de release',
+            'Ambientes em contêiner e pipelines de release',
             'Monitoramento e observabilidade orientados a incidentes',
-            'Experiencia com AWS, Azure e DigitalOcean',
+            'Experiência com AWS, Azure e DigitalOcean',
           ],
         },
       ],
     },
     philosophyPage: {
       tag: 'Filosofia',
-      title: 'Principios que sustentam entrega previsivel.',
-      intro: 'Menos improviso e mais clareza para transformar escopo em software funcional.',
+      title: 'Princípios que sustentam uma entrega previsível.',
+      intro: 'Menos improviso e mais clareza para transformar escopo em software funcionando.',
       principles: [
         {
-          title: 'Contexto antes de codigo',
-          body: 'Toda iniciativa comeca por objetivos, restricoes e criterio de sucesso.',
+          title: 'Contexto antes de código',
+          body: 'Toda iniciativa começa por objetivos, restrições e critério de sucesso.',
         },
         {
           title: 'Incrementos pequenos, risco menor',
-          body: 'Entregas em ciclos curtos para validar direcao com frequencia.',
+          body: 'Entregas em ciclos curtos para validar a direção com frequência.',
         },
         {
-          title: 'Tradeoffs explicitos',
-          body: 'Custo, complexidade e prazo sao discutidos antes de decidir caminho tecnico.',
+          title: 'Tradeoffs explícitos',
+          body: 'Custo, complexidade e prazo são discutidos antes de decidir o caminho técnico.',
         },
         {
           title: 'Qualidade que suporta crescimento',
-          body: 'Arquitetura e padroes para reduzir retrabalho em evolucoes futuras.',
+          body: 'Arquitetura e padrões que reduzem retrabalho nas evoluções futuras.',
         },
       ],
     },
     contactPage: {
       tag: 'Contato',
-      title: 'Receba um diagnostico tecnico inicial do seu projeto.',
-      intro: 'Preencha o formulario com contexto, desafio e objetivo. Respondemos com o proximo passo pratico.',
+      title: 'Receba um diagnóstico técnico inicial do seu projeto.',
+      intro: 'Preencha o formulário com contexto, desafio e objetivo. Respondemos com o próximo passo prático.',
       detailsTitle: 'Detalhes de contato',
-      nextStep: 'Depois do envio, retornamos com avaliacao inicial e sugestao de abordagem em ate 1 dia util.',
-      formTitle: 'Formulario de diagnostico',
-      submitLabel: 'Enviar diagnostico',
-      sendingLabel: 'Enviando...',
-      successMessage: 'Mensagem recebida. Vamos retornar com os proximos passos o mais rapido possivel.',
-      errorMessage: 'Nao foi possivel enviar agora. Tente novamente em alguns minutos.',
+      detailLabels: {
+        email: 'E-mail',
+        location: 'Localização',
+        responseTime: 'Tempo de resposta',
+      },
+      quickTitle: 'Prefere conversar direto?',
+      nextStep: 'Depois do envio, retornamos com uma avaliação inicial e uma sugestão de abordagem em até 1 dia útil.',
+      formTitle: 'Formulário de diagnóstico',
+      submitLabel: 'Enviar diagnóstico',
+      sendingLabel: 'Enviando…',
+      successMessage: 'Mensagem recebida. Vamos retornar com os próximos passos o mais rápido possível.',
+      errorMessage: 'Não foi possível enviar agora. Tente novamente em alguns minutos.',
       validationMessage: 'Revise os campos destacados e tente novamente.',
-      emailFallback: 'Prefere email direto? Envie para',
+      emailFallback: 'Prefere e-mail direto? Envie para',
       fields: {
         name: 'Nome',
-        email: 'Email',
+        email: 'E-mail',
         company: 'Empresa',
-        service: 'Tipo de servico',
-        budget: 'Faixa de investimento',
+        service: 'Tipo de serviço',
+        budget: 'Prazo desejado',
         message: 'Contexto do projeto',
       },
       placeholders: {
         name: 'Seu nome completo',
         email: 'voce@empresa.com',
         company: 'Nome da empresa (opcional)',
-        message: 'Descreva problema, objetivo e prazo esperado.',
+        message: 'Descreva o problema, o objetivo e o prazo esperado.',
       },
-      serviceOptions: ['Discovery + Arquitetura', 'Build de Modulo/Produto', 'Modernizacao e Escala', 'Consultoria tecnica pontual'],
-      budgetOptions: ['A definir', 'R$ 10k - R$ 25k', 'R$ 25k - R$ 60k', 'R$ 60k+'],
+      serviceOptions: ['Discovery + Arquitetura', 'Build de Módulo/Produto', 'Modernização e Escala', 'Consultoria técnica pontual'],
+      budgetOptions: ['A definir', 'Flexível', 'Normal (2 a 3 meses)', 'Urgente (menos de 4 semanas)'],
     },
     footer: {
-      tagline: 'Projetos B2B com clareza de escopo, execucao senior e entrega consistente.',
+      tagline: 'Projetos B2B com clareza de escopo, execução sênior e entrega consistente.',
+      elsewhere: 'Em outros lugares',
     },
     metadata: {
       home: {
-        title: 'ForEachCode | Desenvolvimento de Software B2B',
-        description: 'Projetos de software para SaaS B2B e PMEs com escopo fechado, execucao senior e entrega previsivel.',
-        ogTitle: 'ForEachCode | Desenvolvimento de Software B2B',
-        ogDescription: 'Construcao de produtos web, APIs e modernizacao de sistemas com foco em resultado de negocio.',
+        title: 'ForEachCode | Desenvolvimento de software B2B',
+        description: 'Projetos de software para SaaS B2B e PMEs com escopo fechado, execução sênior e entrega previsível. Pagamentos, Laravel e AWS.',
+        ogTitle: 'ForEachCode | Desenvolvimento de software B2B',
+        ogDescription: 'Produtos web, APIs e modernização de sistemas com foco em resultado de negócio.',
       },
       services: {
-        title: 'Servicos | ForEachCode',
-        description: 'Pacotes de discovery, build e modernizacao para empresas que precisam acelerar produto com previsibilidade.',
-        ogTitle: 'Servicos de Engenharia | ForEachCode',
-        ogDescription: 'Escopo fechado, entregas incrementais e suporte tecnico senior para produtos B2B.',
+        title: 'Serviços e pacotes | ForEachCode',
+        description: 'Pacotes de discovery, build e modernização com prazo estimado, montagem de escopo pelo WhatsApp e perguntas frequentes.',
+        ogTitle: 'Serviços de engenharia | ForEachCode',
+        ogDescription: 'Escopo fechado, entregas incrementais e suporte técnico sênior para produtos B2B.',
       },
       work: {
         title: 'Cases | ForEachCode',
-        description: 'Cases anonimizados com problema, solucao e resultado em projetos de software B2B.',
-        ogTitle: 'Cases de Software B2B | ForEachCode',
-        ogDescription: 'Veja como resolvemos desafios de arquitetura, operacao e escalabilidade.',
+        description: 'Cases com código real: Synopay (PDV cashless com RFID), backend de app social com assinaturas, comparador de preços com IA, plataforma de licenças e app em Rust.',
+        ogTitle: 'Cases de software B2B | ForEachCode',
+        ogDescription: 'Como resolvemos desafios de arquitetura, operação e escala.',
       },
       about: {
         title: 'Sobre | ForEachCode',
-        description: 'Conheca a ForEachCode: time senior, execucao direta e foco em resultado de negocio.',
+        description: 'Conheça a ForEachCode: time sênior, execução direta e foco em resultado de negócio.',
         ogTitle: 'Sobre a ForEachCode',
-        ogDescription: 'Parceiro tecnico para empresas que precisam de entrega com clareza e responsabilidade.',
+        ogDescription: 'Parceiro técnico para empresas que precisam de entrega com clareza e responsabilidade.',
       },
       team: {
         title: 'Time | ForEachCode',
-        description: 'Lideranca tecnica senior com responsabilidade ponta a ponta na entrega.',
-        ogTitle: 'Time Senior | ForEachCode',
-        ogDescription: 'Conheca quem lidera arquitetura, implementacao e handoff dos projetos.',
+        description: 'Liderança técnica sênior com responsabilidade ponta a ponta: pagamentos, AWS, IA e frontend.',
+        ogTitle: 'Time sênior | ForEachCode',
+        ogDescription: 'Quem lidera a arquitetura, a implementação e o handoff dos projetos.',
       },
       skills: {
-        title: 'Stack Tecnico | ForEachCode',
-        description: 'Capacidades tecnicas em frontend, backend, cloud e devops para produtos digitais.',
-        ogTitle: 'Stack Tecnico | ForEachCode',
-        ogDescription: 'Ferramentas e praticas para construir software robusto e evolutivo.',
+        title: 'Stack técnico | ForEachCode',
+        description: 'Capacidades técnicas em frontend, backend, cloud e DevOps para produtos digitais.',
+        ogTitle: 'Stack técnico | ForEachCode',
+        ogDescription: 'Ferramentas e práticas para construir software robusto e evolutivo.',
       },
       philosophy: {
         title: 'Filosofia | ForEachCode',
-        description: 'Principios de trabalho para reduzir risco e aumentar previsibilidade em software.',
-        ogTitle: 'Filosofia de Entrega | ForEachCode',
-        ogDescription: 'Decisoes tecnicas transparentes e execucao orientada a valor.',
+        description: 'Princípios de trabalho para reduzir risco e aumentar a previsibilidade em software.',
+        ogTitle: 'Filosofia de entrega | ForEachCode',
+        ogDescription: 'Decisões técnicas transparentes e execução orientada a valor.',
       },
       contact: {
         title: 'Contato | ForEachCode',
-        description: 'Envie seu contexto e receba um diagnostico tecnico inicial para seu projeto.',
+        description: 'Envie seu contexto ou chame no WhatsApp para receber um diagnóstico técnico inicial em até 1 dia útil.',
         ogTitle: 'Contato | ForEachCode',
-        ogDescription: 'Inicie uma conversa de projeto com foco em escopo, prazo e resultado.',
+        ogDescription: 'Comece a conversa sobre seu projeto com foco em escopo, prazo e resultado.',
       },
     },
   },
@@ -480,8 +769,8 @@ const content: Record<Locale, LocalizedContent> = {
     company: {
       shortName: 'ForEachCode',
       legalName: 'ForEachCode Software Studio',
-      email: 'contact@foreachcode.net',
-      location: 'Sao Paulo, Brazil',
+      email: 'foreachcode@foreachcode.net',
+      location: 'Remote',
       responseWindow: 'Within one business day',
     },
     languageSwitcher: {
@@ -497,17 +786,46 @@ const content: Record<Locale, LocalizedContent> = {
       { slug: 'team', label: 'Team' },
       { slug: 'contact', label: 'Contact' },
     ],
+    channels: {
+      whatsappLabel: 'Message on WhatsApp',
+      whatsappMessage: 'Hi! I found ForEachCode on the website and would like to talk about a project.',
+      whatsappHint: 'No commitment: tell me the problem and I will say whether it makes sense to move forward.',
+    },
     home: {
       badge: 'Software delivery for B2B SaaS and SMEs',
       title: 'Fixed-scope software projects with predictable delivery.',
-      subtitle: 'Senior technical leadership, hands-on execution, and business outcome focus.',
-      supporting: 'From discovery to deployment: architecture, implementation, and handoff with clear priorities, timelines, and constraints.',
-      primaryCta: 'Start project diagnosis',
+      subtitle: 'Senior technical leadership and hands-on execution, specialized in payments, Laravel and AWS. From discovery to deployment, with clear priorities, timelines and cost.',
+      primaryCta: 'Request a diagnosis',
       secondaryCta: 'View case studies',
+      terminalTitle: 'foreachcode — project',
+      terminal: [
+        { kind: 'cmd', text: 'foreachcode diagnose --project your-saas' },
+        { kind: 'out', text: 'reading context, constraints and deadline…' },
+        { kind: 'ok', text: 'risks mapped · scope split into phases' },
+        { kind: 'cmd', text: 'foreachcode plan --releases biweekly' },
+        { kind: 'out', text: 'phase 1 discovery · phase 2 build · phase 3 handoff' },
+        { kind: 'ok', text: 'roadmap with timeline per phase' },
+        { kind: 'cmd', text: 'php artisan test --parallel' },
+        { kind: 'ok', text: 'tests passing · critical flows covered' },
+        { kind: 'cmd', text: 'foreachcode deploy --production' },
+        { kind: 'ok', text: 'live · monitored · documented' },
+      ],
+      statsTitle: 'By the numbers',
+      stats: [
+        { value: 20, suffix: '+', label: 'years building software' },
+        { value: 5, label: 'case studies backed by real code: 2 client projects, 3 own products' },
+        { value: 1, label: 'business day to reply to a request' },
+        { value: 2, label: 'working languages: English and Portuguese' },
+      ],
+      stackTitle: 'Everyday stack',
+      casesTitle: 'Projects with real code behind them',
+      casesBody: 'Projects where I wrote most of the code. Client projects are shown without names.',
+      casesCta: 'See all 5 case studies',
+      highlightsTitle: 'How the work runs, from day one to production.',
       highlights: [
         {
           title: 'Phased fixed scope',
-          body: 'Work is planned in short increments with explicit risks and technical decisions documented.',
+          body: 'Work is planned in short increments with explicit risks and documented technical decisions.',
         },
         {
           title: 'Senior end-to-end execution',
@@ -515,22 +833,41 @@ const content: Record<Locale, LocalizedContent> = {
         },
         {
           title: 'Operational quality first',
-          body: 'Observability, testing, and maintainable standards so the product can evolve safely.',
+          body: 'Observability, testing and maintainable standards so the product can evolve safely.',
         },
       ],
       processTitle: 'Delivery workflow',
-      processBody: 'A simple process to remove ambiguity, speed up decisions, and keep execution predictable.',
-      processSteps: ['Technical diagnosis', 'Scope and delivery plan', 'Iterative implementation', 'Handoff and assisted evolution'],
+      processBody: 'Four steps, each with a timeline and a deliverable you can hold.',
+      processDeliverable: 'Deliverable',
+      processSteps: [
+        { title: 'Technical diagnosis', duration: 'Short call + reply within 1 business day', deliverable: 'Problem read-out and recommended path' },
+        { title: 'Scope and delivery plan', duration: '1 to 3 weeks', deliverable: 'Architecture, risks and roadmap with cost per phase' },
+        { title: 'Iterative implementation', duration: '4 to 12 weeks', deliverable: 'Biweekly releases to a staging environment' },
+        { title: 'Handoff and assisted evolution', duration: 'Ongoing', deliverable: 'Documentation, monitoring and post-launch support' },
+      ],
+      founder: {
+        tag: 'Who runs your project',
+        title: 'Mateus Galasso, founder',
+        points: ['Payments & Stripe', 'AWS', 'AI in production', 'Laravel + Vue'],
+        cta: 'Meet the team',
+      },
+      closing: {
+        title: 'Stuck project or tight deadline?',
+        body: 'Share the context. Within one business day you get a technical read-out and the next step.',
+      },
     },
     servicesPage: {
       tag: 'Services',
       title: 'Delivery packages designed for momentum.',
-      intro: 'Each package has a clear objective, practical scope, and expected timeline so decision-making stays fast.',
+      intro: 'Each package has a clear objective, practical scope and expected timeline so decisions stay fast.',
+      priceLabel: 'Investment',
+      priceNote: 'Pricing depends on scope and comes after the first conversation.',
       packages: [
         {
           title: 'Discovery + Architecture',
-          idealFor: 'Best for teams facing technical bottlenecks, unclear priorities, or uncertain solution direction.',
-          timeline: 'Typical timeline: 1-3 weeks',
+          idealFor: 'For teams facing technical bottlenecks, unclear priorities or uncertain solution direction.',
+          timeline: 'Typical timeline: 1 to 3 weeks',
+          priceFrom: 'On request',
           items: [
             'Architecture and risk diagnosis',
             'Prioritized technical roadmap',
@@ -539,55 +876,158 @@ const content: Record<Locale, LocalizedContent> = {
         },
         {
           title: 'Module or Product Build',
-          idealFor: 'Best for critical product features, early-stage B2B MVPs, or internal workflow modernization.',
-          timeline: 'Typical timeline: 4-12 weeks',
+          idealFor: 'For critical product features, early-stage B2B MVPs or internal workflow modernization.',
+          timeline: 'Typical timeline: 4 to 12 weeks',
+          priceFrom: 'On request',
           items: [
-            'Backend, frontend, and integrations in one flow',
+            'Backend, frontend and integrations in one flow',
             'Incremental releases tied to business checkpoints',
-            'Technical documentation and quality baseline for long-term ownership',
+            'Technical documentation and a quality baseline for long-term ownership',
           ],
         },
         {
           title: 'Modernization and Scale',
-          idealFor: 'Best for legacy systems with high change cost and operational risk.',
-          timeline: 'Typical timeline: 6-16 weeks',
+          idealFor: 'For legacy systems with high change cost and operational risk.',
+          timeline: 'Typical timeline: 6 to 16 weeks',
+          priceFrom: 'On request',
           items: [
             'Risk-driven refactoring',
             'Performance and reliability improvements',
-            'Support for deployment, monitoring, and continuous evolution',
+            'Support for deployment, monitoring and continuous evolution',
           ],
         },
       ],
-      cta: 'Request diagnosis',
+      cta: 'Request a diagnosis',
+      simulator: {
+        title: 'Shape your scope',
+        intro: 'Tick what the project involves. The summary is ready to send on WhatsApp.',
+        typeLabel: 'Project type',
+        deadlineLabel: 'Timeline',
+        extrasLabel: 'The project involves',
+        types: ['One-off technical consulting', 'Discovery + Architecture', 'Module or Product Build', 'Modernization and Scale'],
+        deadlines: ['Flexible', 'Normal (2 to 3 months)', 'Urgent (under 4 weeks)'],
+        extras: ['Payments (Stripe, subscriptions, payouts)', 'AI or LLMs in production', 'Mobile app or API', 'Admin panel', 'Third-party integration', 'Legacy system migration'],
+        resultLabel: 'Scope summary',
+        summaryIntro: 'Hi! I found ForEachCode on the website. My scope:',
+        note: 'No automatic price: pricing comes from the conversation, based on scope.',
+        cta: 'Send summary on WhatsApp',
+      },
+      faq: {
+        title: 'Frequently asked questions',
+        items: [
+          {
+            q: 'Can you invoice as a company?',
+            a: 'Yes. We contract as a legal entity and issue a service invoice.',
+          },
+          {
+            q: 'Do you work with companies outside Brazil and bill in USD?',
+            a: 'Yes. Clients abroad can sign in USD and pay by international wire transfer.',
+          },
+          {
+            q: 'Will you sign an NDA before seeing the project?',
+            a: 'Yes. If you prefer, we sign the NDA before the technical conversation.',
+          },
+          {
+            q: 'Is there a warranty after delivery?',
+            a: 'Defects found within 30 days after each phase is delivered are fixed at no cost.',
+          },
+          {
+            q: 'Who writes the code?',
+            a: 'The person who designs the solution also implements it. Nothing is handed off to a junior team.',
+          },
+        ],
+      },
     },
     workPage: {
       tag: 'Work',
-      title: 'Anonymized case studies with measurable impact.',
-      intro: 'Real project examples structured as context, challenge, solution, and outcome.',
+      title: 'Problem, solution, result.',
+      intro: 'Two client projects and three own products. The product numbers come from each repository\'s code, not estimates.',
+      labels: {
+        problem: 'Problem',
+        solution: 'Solution',
+        result: 'What I did',
+        stack: 'Stack',
+        metrics: 'From the repo',
+      },
+      ownTitle: 'Own products',
       caseStudies: [
         {
-          title: 'Lycento - Multi-Tenant Payments & Licensing SaaS',
-          context: 'A global Merchant of Record platform (like Lemon Squeezy) built with Laravel 12 and Vue 3.',
-          challenge: 'Merchants needed a platform to manage digital product catalogs, handle complex recurring billing, and securely issue and validate software licenses via API.',
-          solution: 'Full-stack development featuring deep Stripe Connect integration, license key issuance with device validation constraints, and merchant analytics dashboards.',
-          result: 'Complete infrastructure ready to onboard vendors globally and process payments across multiple models (One-time, Subscriptions).',
-          image: '/images/projects/lycento.png',
+          title: 'Synopay',
+          kind: 'Cashless RFID-wristband POS for events and hospitality',
+          status: 'Client · in production',
+          problem: 'Bars, festivals and resorts needed to sell without cash or cards slowing the line: guests pay with a tap of their wristband, and staff need orders, balances and the kitchen in real time.',
+          solution: 'A Laravel platform with a web POS, RFID wristbands with stored balance, a real-time kitchen display and order grid (Reverb), a Filament admin, an API for the mobile reader, and payments through Square, Stripe and CardKnox.',
+          result: 'Lead developer: architecture, POS, wristband flow, payment integrations, spa booking and the hotel system (Opera) integration, plus deployment on Laravel Cloud.',
+          stack: ['Laravel', 'Filament', 'Livewire', 'Octane', 'Reverb', 'Postgres', 'Stripe', 'Square'],
+          metrics: [],
+          image: {
+            src: '/images/cases/synopay-pos.webp',
+            cardSrc: '/images/cases/synopay-pos-card.webp',
+            width: 1600,
+            height: 1112,
+            alt: 'Synopay POS screen with the product grid and a three-item order in the cart',
+            caption: 'Real POS screen. The venue and operator names are blurred.',
+          },
+          gallery: [
+            {
+              src: '/images/cases/synopay-rfid.webp',
+              width: 1600,
+              height: 1112,
+              alt: 'RFID wristband payment dialog waiting for a wristband scan',
+              caption: 'Paying the order with the RFID wristband.',
+            },
+          ],
         },
         {
-          title: 'BenderStack - Q&A Engine and API Infrastructure for AI Bots',
-          context: 'Comprehensive platform for AI agent management with a web dashboard and secure API.',
-          challenge: 'Protecting the API surface from direct human interaction, enforcing that all actors prove they are automated software agents.',
-          solution: 'Implemented multi-layer authentication using Ed25519 keypairs, HMAC signatures, and an LLM-based Reverse CAPTCHA mechanism serving TOON format.',
-          result: 'A secure, AI-only operated Q&A environment completely shielded from human abuse, featuring automatic reputation systems and upvoting.',
-          image: '/images/projects/benderstack.png',
+          title: 'Social app backend',
+          kind: 'Real-time chat and app store subscriptions',
+          status: 'Client',
+          problem: 'A social app needed phone sign-in, location-based matching, time-limited chats and paid subscriptions on both the App Store and Google Play, all with real-time notifications.',
+          solution: 'A Laravel API with real-time messaging (Reverb), Horizon queues, Apple and Google purchase validation, Firebase push, SMS and a Filament admin panel.',
+          result: 'Wrote most of the backend: data model, app API, subscriptions on both stores, notifications and the operations panel.',
+          stack: ['Laravel', 'Octane', 'Reverb', 'Horizon', 'Filament', 'Firebase', 'App Store API'],
+          metrics: [],
         },
         {
-          title: 'DevGen - Mock Data Architect Desktop Tool',
-          context: 'Cross-platform desktop utility application engineered with Rust (Tauri) and Vue 3.',
-          challenge: 'Developers consistently lose time manually crafting extensive, structurally valid mock datasets and profiles for application testing.',
-          solution: 'A high-performance system-tray oriented desktop application for instantaneous multi-domain data generation and native JSON export.',
-          result: 'Lightning-fast utility consuming minimal system resources, featuring full i18n support and robust extensibility via Rust Trait architectures.',
-          image: '/images/projects/devgen.png',
+          title: 'Carrinho Inteligente',
+          kind: 'Grocery price comparison',
+          status: 'Own product · in development',
+          own: true,
+          problem: 'People doing their monthly grocery run cannot tell which store makes the whole list cheapest, or whether splitting it across two stores pays off.',
+          solution: 'A shopping list that compares stores and shows the cheapest run in a single store or split across two. Prices come from tax receipts (NFC-e), shelf-label photos and flyers read with AI, plus scrapers for wholesale and retail chains.',
+          result: 'Built from scratch: Postgres/PostGIS data model, AI price reading with Gemini through Prism, per-chain scrapers, recurring billing and an admin panel.',
+          stack: ['Laravel', 'Inertia', 'Vue 3', 'PostGIS', 'Prism', 'Gemini', 'Filament'],
+          metrics: [
+            { label: 'Project started', value: '2025' },
+            { label: 'Prices read from receipts, photos and flyers', value: 'AI' },
+          ],
+          image: {
+            src: '/images/cases/carrinho-inteligente.webp',
+            alt: 'Shopping list screen with four items and a ranking of the cheapest stores',
+            caption: 'Real screen from the app in development, with test data.',
+          },
+        },
+        {
+          title: 'Lycento',
+          kind: 'Payments and software licensing platform',
+          status: 'Own product · paused',
+          own: true,
+          problem: 'Selling software through one-time payments or subscriptions and issuing API-validated licenses meant stitching together several separate tools.',
+          solution: 'A multi-tenant platform in the style of Paddle/Lemon Squeezy: vendors set up products and pricing, get paid by Pix, card or subscription, and the API activates and validates licenses per device.',
+          result: 'Architecture and implementation: vendor panel, customer portal, license API with JavaScript and Rust SDKs, and checkout with Stripe and AbacatePay.',
+          stack: ['Laravel 12', 'Inertia', 'Vue 3', 'Stripe', 'AbacatePay', 'Rust SDK'],
+          metrics: [],
+        },
+        {
+          title: 'DevGen',
+          kind: 'Offline test-data generator, open source',
+          status: 'Own product · open source (MIT)',
+          own: true,
+          problem: 'Developers waste time hand-crafting valid Brazilian IDs (CPF, CNPJ, RG) and other data to test their systems.',
+          solution: 'A macOS desktop app that generates valid Brazilian data offline: people, companies, documents and vehicles, ready to export for testing.',
+          result: 'Zero to 1.0: a Tauri app with a Rust core, a Vue interface, CI with tests and a signed macOS build.',
+          stack: ['Rust', 'Tauri 2', 'Vue 3', 'TypeScript'],
+          metrics: [],
         },
       ],
       cta: 'I need this outcome',
@@ -598,13 +1038,13 @@ const content: Record<Locale, LocalizedContent> = {
       intro: 'ForEachCode works as a technical partner for companies that need momentum without unnecessary overhead.',
       story: [
         'The studio was created to solve a frequent product problem: too much alignment, not enough meaningful delivery.',
-        'Our operating model emphasizes scope clarity, direct communication, and accountability for production behavior.',
+        'Our operating model emphasizes scope clarity, direct communication and accountability for production behavior.',
         'We work remotely with companies in Brazil and abroad, especially in B2B contexts where timelines and constraints are real.',
       ],
       pillars: [
         {
           title: 'Low-bureaucracy execution',
-          body: 'Decisions are made quickly based on risk, impact, and realistic delivery capacity.',
+          body: 'Decisions are made quickly based on risk, impact and realistic delivery capacity.',
         },
         {
           title: 'Technology serving business',
@@ -620,31 +1060,31 @@ const content: Record<Locale, LocalizedContent> = {
     teamPage: {
       tag: 'Team',
       title: 'Senior leadership with end-to-end accountability.',
-      intro: 'Delivery is led by Brett Humphreys and Mateus Galasso, combining product strategy and hands-on engineering execution.',
+      intro: 'Delivery is led by Mateus Galasso and Brett Humphreys, combining product strategy and hands-on engineering.',
       members: [
+        {
+          name: 'Mateus Galasso',
+          role: 'Founder',
+          bio: founderBio.en,
+          linkedin: contactChannels.founderLinkedin,
+          github: 'https://github.com/mateusgalasso',
+          avatar: mateusHeadshot,
+        },
         {
           name: 'Brett Humphreys',
           role: 'Senior Full Cycle Developer',
           credentials: 'Veteran-owned · TS/SCI cleared',
-          bio: 'Retired Army Major and senior software engineer. Leads frontend architecture and product in the wild; builds with Vue, Flutter, and Go. Board member at Homeland Security Foundation of America. 20+ years of leadership and delivery from command to production apps.',
+          bio: 'Retired Army Major and senior software engineer. Leads frontend architecture and product in the wild; builds with Vue, Flutter and Go. Board member at Homeland Security Foundation of America. 20+ years of leadership and delivery, from command to production apps.',
           linkedin: 'https://www.linkedin.com/in/humphreysbrett/',
           github: 'https://github.com/radiancelux',
           avatar: brettHeadshot,
-        },
-        {
-          name: 'Mateus Galasso',
-          role: 'Founder',
-          bio: '20+ years in software with focus on PHP, Laravel, Vue, DevOps, and cloud delivery. Drives architecture and implementation for web products and internal systems.',
-          linkedin: 'https://www.linkedin.com/in/mateus-galasso',
-          github: 'https://github.com/mateusgalasso',
-          avatar: mateusHeadshot,
         },
       ],
     },
     skillsPage: {
       tag: 'Stack',
-      title: 'Technical capability to build, stabilize, and scale.',
-      intro: 'Tooling decisions are guided by maintainability, performance, and fit with business constraints.',
+      title: 'Technical capability to build, stabilize and scale.',
+      intro: 'Tooling decisions are guided by maintainability, performance and fit with business constraints.',
       groups: [
         {
           title: 'Frontend',
@@ -657,9 +1097,9 @@ const content: Record<Locale, LocalizedContent> = {
         {
           title: 'Backend',
           points: [
-            'Laravel APIs, async jobs, and system integrations',
+            'Laravel APIs, async jobs and system integrations',
             'Data modeling aligned with long-term product evolution',
-            'Error handling, logging, and testing for operational reliability',
+            'Error handling, logging and testing for operational reliability',
           ],
         },
         {
@@ -667,7 +1107,7 @@ const content: Record<Locale, LocalizedContent> = {
           points: [
             'Containerized environments and release pipelines',
             'Monitoring and observability for incident response',
-            'Hands-on experience with AWS, Azure, and DigitalOcean',
+            'Hands-on experience with AWS, Azure and DigitalOcean',
           ],
         },
       ],
@@ -679,15 +1119,15 @@ const content: Record<Locale, LocalizedContent> = {
       principles: [
         {
           title: 'Context before code',
-          body: 'Every initiative starts with goals, constraints, and a clear success definition.',
+          body: 'Every initiative starts with goals, constraints and a clear definition of success.',
         },
         {
           title: 'Small increments reduce risk',
-          body: 'Short cycles keep progress visible and direction validated early.',
+          body: 'Short cycles keep progress visible and validate direction early.',
         },
         {
           title: 'Tradeoffs are explicit',
-          body: 'Cost, complexity, and timeline are discussed before technical commitment.',
+          body: 'Cost, complexity and timeline are discussed before any technical commitment.',
         },
         {
           title: 'Quality supports growth',
@@ -698,12 +1138,18 @@ const content: Record<Locale, LocalizedContent> = {
     contactPage: {
       tag: 'Contact',
       title: 'Get an initial technical diagnosis for your project.',
-      intro: 'Share your context, constraints, and expected outcomes. We reply with the most practical next step.',
+      intro: 'Share your context, constraints and expected outcomes. We reply with the most practical next step.',
       detailsTitle: 'Contact details',
+      detailLabels: {
+        email: 'Email',
+        location: 'Location',
+        responseTime: 'Response time',
+      },
+      quickTitle: 'Prefer to talk directly?',
       nextStep: 'After submission, you receive an initial assessment and a suggested approach within one business day.',
       formTitle: 'Project diagnosis form',
       submitLabel: 'Submit diagnosis',
-      sendingLabel: 'Submitting...',
+      sendingLabel: 'Submitting…',
       successMessage: 'Message received. We will reach out soon with recommended next steps.',
       errorMessage: 'Unable to submit right now. Please try again in a few minutes.',
       validationMessage: 'Please review the highlighted fields and submit again.',
@@ -713,72 +1159,88 @@ const content: Record<Locale, LocalizedContent> = {
         email: 'Email',
         company: 'Company',
         service: 'Service type',
-        budget: 'Budget range',
+        budget: 'Desired timeline',
         message: 'Project context',
       },
       placeholders: {
         name: 'Your full name',
         email: 'you@company.com',
         company: 'Company name (optional)',
-        message: 'Describe the challenge, expected outcome, and timeline.',
+        message: 'Describe the challenge, expected outcome and timeline.',
       },
       serviceOptions: ['Discovery + Architecture', 'Module/Product Build', 'Modernization and Scale', 'Targeted technical consulting'],
-      budgetOptions: ['Undecided', '$2k - $5k', '$5k - $12k', '$12k+'],
+      budgetOptions: ['Undecided', 'Flexible', 'Normal (2 to 3 months)', 'Urgent (under 4 weeks)'],
     },
     footer: {
-      tagline: 'B2B software projects with scope clarity, senior execution, and consistent delivery.',
+      tagline: 'B2B software projects with scope clarity, senior execution and consistent delivery.',
+      elsewhere: 'Elsewhere',
     },
     metadata: {
       home: {
         title: 'ForEachCode | B2B Software Development Studio',
-        description: 'Fixed-scope software projects for B2B SaaS and SMEs with senior execution and predictable delivery.',
+        description: 'Fixed-scope software projects for B2B SaaS and SMEs with senior execution and predictable delivery. Payments, Laravel and AWS.',
         ogTitle: 'ForEachCode | B2B Software Development',
-        ogDescription: 'Web products, APIs, and modernization work focused on measurable business outcomes.',
+        ogDescription: 'Web products, APIs and modernization work focused on measurable business outcomes.',
       },
       services: {
-        title: 'Services | ForEachCode',
-        description: 'Discovery, build, and modernization packages for teams that need reliable product momentum.',
-        ogTitle: 'Engineering Services | ForEachCode',
-        ogDescription: 'Fixed scope, incremental releases, and senior technical ownership.',
+        title: 'Services and packages | ForEachCode',
+        description: 'Discovery, build and modernization packages with timelines, a WhatsApp scope builder and FAQ.',
+        ogTitle: 'Engineering services | ForEachCode',
+        ogDescription: 'Fixed scope, incremental releases and senior technical ownership.',
       },
       work: {
         title: 'Work | ForEachCode',
-        description: 'Anonymized case studies with context, challenge, solution, and outcomes.',
-        ogTitle: 'Case Studies | ForEachCode',
+        description: 'Case studies backed by real code: Synopay (a cashless RFID POS), a social app backend with subscriptions, an AI price comparison app, a licensing platform and a Rust app.',
+        ogTitle: 'Case studies | ForEachCode',
         ogDescription: 'How ForEachCode solves architecture and delivery challenges in B2B software.',
       },
       about: {
         title: 'About | ForEachCode',
-        description: 'Lean senior software studio focused on scope clarity, execution, and accountability.',
+        description: 'Lean senior software studio focused on scope clarity, execution and accountability.',
         ogTitle: 'About ForEachCode',
         ogDescription: 'Technical partner for product teams that need speed and reliability.',
       },
       team: {
         title: 'Team | ForEachCode',
-        description: 'Senior technical leadership with end-to-end project accountability.',
+        description: 'Senior technical leadership with end-to-end accountability: payments, AWS, AI and frontend.',
         ogTitle: 'Team | ForEachCode',
-        ogDescription: 'Who leads architecture, implementation, and production handoff.',
+        ogDescription: 'Who leads architecture, implementation and production handoff.',
       },
       skills: {
-        title: 'Technical Stack | ForEachCode',
-        description: 'Frontend, backend, cloud, and devops capabilities for modern product delivery.',
-        ogTitle: 'Technical Stack | ForEachCode',
+        title: 'Technical stack | ForEachCode',
+        description: 'Frontend, backend, cloud and DevOps capabilities for modern product delivery.',
+        ogTitle: 'Technical stack | ForEachCode',
         ogDescription: 'Technologies and practices used to build maintainable software systems.',
       },
       philosophy: {
         title: 'Principles | ForEachCode',
         description: 'Delivery principles built to reduce risk and improve software predictability.',
-        ogTitle: 'Delivery Principles | ForEachCode',
+        ogTitle: 'Delivery principles | ForEachCode',
         ogDescription: 'Clear decision-making and transparent engineering tradeoffs.',
       },
       contact: {
         title: 'Contact | ForEachCode',
-        description: 'Share your project context and receive an initial technical diagnosis.',
+        description: 'Share your project context or message us on WhatsApp to get an initial technical diagnosis within one business day.',
         ogTitle: 'Contact ForEachCode',
         ogDescription: 'Start your project conversation with practical next steps.',
       },
     },
   },
+}
+
+export function whatsappHref(locale: Locale): string | null {
+  if (contactChannels.whatsappNumber === '') {
+    return null
+  }
+
+  const text = encodeURIComponent(content[locale].channels.whatsappMessage)
+
+  return `https://wa.me/${contactChannels.whatsappNumber}?text=${text}`
+}
+
+// Link do WhatsApp com uma mensagem própria (ex.: resumo do escopo montado em Serviços).
+export function whatsappMessageHref(message: string): string {
+  return `https://wa.me/${contactChannels.whatsappNumber}?text=${encodeURIComponent(message)}`
 }
 
 export function resolveLocale(value: unknown): Locale {

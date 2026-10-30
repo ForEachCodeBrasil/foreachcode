@@ -1,4 +1,4 @@
-import { createRouter, createWebHistory } from 'vue-router'
+import { createMemoryHistory, createRouter, createWebHistory, type Router } from 'vue-router'
 import {
   buildLocalizedPath,
   defaultLocale,
@@ -101,30 +101,40 @@ const routes = [
   },
 ]
 
-const router = createRouter({
-  history: createWebHistory(),
-  routes,
-})
+export function createAppRouter(): Router {
+  const isBrowser = typeof window !== 'undefined'
+  const router = createRouter({
+    history: isBrowser ? createWebHistory() : createMemoryHistory(),
+    routes,
+    scrollBehavior(_to, _from, saved) {
+      return saved ?? { top: 0 }
+    },
+  })
 
-router.afterEach((to) => {
-  const locale = resolveLocale(to.params.locale)
-  const pageKey = typeof to.meta.pageKey === 'string' ? (to.meta.pageKey as PageKey) : 'home'
-  const meta = getPageMeta(locale, pageKey)
+  if (!isBrowser) {
+    return router
+  }
 
-  document.title = meta.title
-  document.documentElement.lang = locale
+  router.afterEach((to) => {
+    const locale = resolveLocale(to.params.locale)
+    const pageKey = typeof to.meta.pageKey === 'string' ? (to.meta.pageKey as PageKey) : 'home'
+    const meta = getPageMeta(locale, pageKey)
 
-  setMetaByName('description', meta.description)
-  setMetaByName('twitter:title', meta.ogTitle)
-  setMetaByName('twitter:description', meta.ogDescription)
-  setMetaByProperty('og:title', meta.ogTitle)
-  setMetaByProperty('og:description', meta.ogDescription)
-  setMetaByProperty('og:locale', locale === 'pt' ? 'pt_BR' : 'en_US')
+    document.title = meta.title
+    document.documentElement.lang = locale === 'pt' ? 'pt-BR' : 'en'
 
-  const canonical = `${window.location.origin}${to.fullPath}`
-  setMetaByProperty('og:url', canonical)
+    setMetaByName('description', meta.description)
+    setMetaByName('twitter:title', meta.ogTitle)
+    setMetaByName('twitter:description', meta.ogDescription)
+    setMetaByProperty('og:title', meta.ogTitle)
+    setMetaByProperty('og:description', meta.ogDescription)
+    setMetaByProperty('og:locale', locale === 'pt' ? 'pt_BR' : 'en_US')
 
-  trackPageView(to.fullPath, meta.title, locale)
-})
+    const canonical = `${window.location.origin}${to.path}`
+    setMetaByProperty('og:url', canonical)
 
-export default router
+    trackPageView(to.fullPath, meta.title, locale)
+  })
+
+  return router
+}
